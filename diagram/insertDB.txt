@@ -1,0 +1,67 @@
+insert into country (country_nam, country_num_cod) values ('Venezuela', '+58');
+insert into country (country_nam, country_num_cod) values ('Colombia', '+57');
+insert into country (country_nam, country_num_cod) values ('Mexico', '+52');
+insert into country (country_nam, country_num_cod) values ('Brazil', '+55');
+insert into country (country_nam, country_num_cod) values ('Canada', '+1');
+insert into country (country_nam, country_num_cod) values ('Ecuador', '+593');
+insert into country (country_nam, country_num_cod) values ('Salvador', '+500');
+insert into country (country_nam, country_num_cod) values ('Cuba', '+53');
+insert into country (country_nam, country_num_cod) values ('Argentina', '+54');
+insert into country (country_nam, country_num_cod) values ('Chile', '+56');
+insert into country (country_nam, country_num_cod) values ('Uruguay', '+598');
+insert into country (country_nam, country_num_cod) values ('Volivia', '+591');
+insert into country (country_nam, country_num_cod) values ('Paraguay', '+595');
+insert into country (country_nam, country_num_cod) values ('Peru', '+51');
+insert into country (country_nam, country_num_cod) values ('Panama', '+507');
+insert into country (country_nam, country_num_cod) values ('Puerto Rico', '+509');
+insert into country (country_nam, country_num_cod) values ('Costa Rica', '+506');
+
+insert into university (university_nam) values ('Universidad de los Andes'); 
+insert into university (university_nam) values ('Universidad Rafael Urdaneta'); 
+insert into university (university_nam) values ('Universidad Central de Venezuela'); 
+insert into university (university_nam) values ('Universidad Simon Bolivar'); 
+insert into university (university_nam) values ('Universidad del Zulia'); 
+insert into university (university_nam) values ('Universidad Rafael Bellosos Chacin');
+insert into university (university_nam) values ('Universidad del Zulia'); 
+insert into university (university_nam) values ('Universidad Catolica Andres Bello'); 
+
+insert into language (language_des) values ('German');
+insert into language (language_des) values ('French');
+insert into language (language_des) values ('English');
+insert into language (language_des) values ('Spanish');
+insert into language (language_des) values ('Potuguese');
+insert into language (language_des) values ('Chinese');
+insert into language (language_des) values ('Japanese');
+insert into language (language_des) values ('Corean');
+insert into language (language_des) values ('Russian');
+insert into language (language_des) values ('Italian');
+insert into language (language_des) values ('Swahili');
+
+insert into qualification (qualification_nam) values ('Arquitectura');
+insert into qualification (qualification_nam) values ('Escuela de Ingeniería en Computación');
+insert into qualification (qualification_nam) values ('Ingeniería Industrial');
+insert into qualification (qualification_nam) values ('Ingeniería Química');
+insert into qualification (qualification_nam) values ('Ingeniería en Telecomunicaciones');
+insert into qualification (qualification_nam) values ('Ingeniería Eléctrica');
+insert into qualification (qualification_nam) values ('Ingeniería Civil');
+insert into qualification (qualification_nam) values ('Psicología');
+insert into qualification (qualification_nam) values ('Derecho');
+insert into qualification (qualification_nam) values ('Ciencias Políticas');
+insert into qualification (qualification_nam) values ('Contaduría Pública');
+insert into qualification (qualification_nam) values ('Administración de Empresas');
+insert into qualification (qualification_nam) values ('Ingeniería en Producción Animal');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,99 @@
+
+CREATE SEQUENCE public.user_1_user_ide_seq;
+
+CREATE TABLE public.user_1 (
+                user_ide INTEGER NOT NULL DEFAULT nextval('public.user_1_user_ide_seq'),
+                user_nam VARCHAR NOT NULL,
+                user_pas VARCHAR NOT NULL,
+                user_ema VARCHAR NOT NULL,
+                CONSTRAINT user_1_pk PRIMARY KEY (user_ide)
+);
+
+
+ALTER SEQUENCE public.user_1_user_ide_seq OWNED BY public.user_1.user_ide;
+
+CREATE SEQUENCE public.list_lis_ide_seq;
+
+CREATE TABLE public.list (
+                list_ide INTEGER NOT NULL DEFAULT nextval('public.list_lis_ide_seq'),
+                list_tit VARCHAR NOT NULL,
+                list_img VARCHAR,
+                user_ide INTEGER NOT NULL,
+                CONSTRAINT list_pk PRIMARY KEY (list_ide)
+);
+
+
+ALTER SEQUENCE public.list_lis_ide_seq OWNED BY public.list.list_ide;
+
+CREATE SEQUENCE public.task_task_ide_seq;
+
+CREATE TABLE public.task (
+                task_ide INTEGER NOT NULL DEFAULT nextval('public.task_task_ide_seq'),
+                task_tit VARCHAR NOT NULL,
+                task_dat_cre TIMESTAMP NOT NULL,
+                task_des VARCHAR,
+                list_ide INTEGER NOT NULL,
+                task_dat_exp TIMESTAMP,
+                task_pin BOOLEAN NOT NULL,
+                task_dat_not TIMESTAMP,
+                task_che BOOLEAN NOT NULL,
+                task_pos INTEGER NOT NULL,
+                CONSTRAINT task_pk PRIMARY KEY (task_ide)
+);
+
+
+ALTER SEQUENCE public.task_task_ide_seq OWNED BY public.task.task_ide;
+
+CREATE SEQUENCE public.archive_archive_seq;
+
+CREATE TABLE public.archive (
+                archive_ide INTEGER NOT NULL DEFAULT nextval('public.archive_archive_seq'),
+                archive_jso JSON NOT NULL,
+                task_ide INTEGER NOT NULL,
+                CONSTRAINT archive_pk PRIMARY KEY (archive_ide)
+);
+
+
+ALTER SEQUENCE public.archive_archive_seq OWNED BY public.archive.archive_ide;
+
+CREATE SEQUENCE public.step_step_ide_seq;
+
+CREATE TABLE public.step (
+                step_ide INTEGER NOT NULL DEFAULT nextval('public.step_step_ide_seq'),
+                step_des VARCHAR NOT NULL,
+                task_ide INTEGER NOT NULL,
+                step_che BOOLEAN NOT NULL,
+                CONSTRAINT step_pk PRIMARY KEY (step_ide)
+);
+
+
+ALTER SEQUENCE public.step_step_ide_seq OWNED BY public.step.step_ide;
+
+
+ALTER TABLE public.list ADD CONSTRAINT user_1_list_fk
+FOREIGN KEY (user_ide)
+REFERENCES public.user_1 (user_ide)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.task ADD CONSTRAINT list_task_fk
+FOREIGN KEY (list_ide)
+REFERENCES public.list (list_ide)
+ON DELETE CASCADE
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.step ADD CONSTRAINT task_step_fk
+FOREIGN KEY (task_ide)
+REFERENCES public.task (task_ide)
+ON DELETE CASCADE
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.archive ADD CONSTRAINT task_archive_fk
+FOREIGN KEY (task_ide)
+REFERENCES public.task (task_ide)
+ON DELETE CASCADE
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
