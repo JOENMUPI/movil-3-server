@@ -14,6 +14,7 @@ router.post(`${ endPoint }/singup`, user.createUsers);
 router.post(`${ endPoint }/singin`, user.login);
 router.post(`${ endPoint }/check/email`, user.checkEmail);
 router.post(`${ endPoint }/check/number`, user.checkNum);
+router.post(`${ endPoint }/check/code`, user.checkCode);
 
 
 // Put

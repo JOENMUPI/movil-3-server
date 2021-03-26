@@ -23,10 +23,16 @@ const dataToUser = (rows) => {
         
     rows.forEach(element => {
         users.push({  
+            description: element.user_des,
             name: element.user_nam,
             lastName: element.user_las_nam,
-            number: element.user_num,
+            country: element.country_nam,
+            dateCreation: element.user_dat_cre,
+            img: element.user_img,
             email: element.user_ema,
+            awards: element.user_awa_jso,
+            interests: element.user_int_jso,
+            skills: element.user_ski_jso,
             id: element.user_ide
         });
     });
@@ -34,19 +40,17 @@ const dataToUser = (rows) => {
     return users;
 }
 
-const sms = async (phoneNumber) => {
-    let randomCode = Math.floor(Math.random()*10001);
+const sms = async (phoneNumber, code) => {
     const jsonAux = {
-        body: `Your FakedIn's code verification is ${randomCode}`,
+        body: `Your FakedIn's code verification is ${code}`,
         from: twilioConfig.phone,
         to: phoneNumber  
     }
     
-    const message = await twilioClient.messages.create(jsonAux);
-    console.log(message.sid);
+    await twilioClient.messages.create(jsonAux);
 }
 
-const checkAux = async (fieldData, type, callBack) => { console.log(twilioConfig.sid);
+const checkAux = async (fieldData, type, callBack) => { 
     let data;
 
     switch(type) {
@@ -76,8 +80,8 @@ const checkAux = async (fieldData, type, callBack) => { console.log(twilioConfig
 
 
 // Logic
-const checkNum = (req, res) => {
-    const { phoneNumber } = req.params;
+const checkNum = (req, res) => { 
+    const { phoneNumber } = req.body; 
 
     checkAux(phoneNumber, 'number', (err, users) => {
         if(err) {
@@ -87,13 +91,39 @@ const checkNum = (req, res) => {
             res.json(newReponse(`Number ${ phoneNumber } already use`, 'Error', { }));
             
         } else {    
-            res.json(newReponse('Phone number checked', 'Success', { }))
+            const randomCode = Math.floor(Math.random() * (10000 - 1000)) + 1000;
+            const tokenBody = { phoneNumber: phoneNumber, code: randomCode }
+            const token = jwt.sign(tokenBody, process.env.SECRET, { expiresIn: '1h' });
+            sms(phoneNumber, randomCode);
+
+            res.json(newReponse('Phone number checked', 'Success', { token }));
         }
     });
 }
 
+const checkCode = (req, res) => { 
+    const token = req.headers['x-access-token'];
+    const { code, phoneNumber } = req.body;
+
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+
+    } else {
+        const tokenDeco = jwt.verify(token, process.env.SECRET);
+        
+        if(tokenDeco.phoneNumber != phoneNumber) {
+            res.json(newReponse('phone number not match', 'Error', { }))  
+        
+        } else {
+            (tokenDeco.code != code)
+            ? res.json(newReponse('Wrong code', 'Error', { }))
+            : res.json(newReponse('Code checked', 'Success', { }));
+        }
+    }
+}
+
 const checkEmail = (req, res) => {
-    const { email } = req.params;
+    const { email } = req.body;
 
     checkAux(email, 'email', (err, users) => {
         if(err) {
@@ -103,8 +133,7 @@ const checkEmail = (req, res) => {
             res.json(newReponse(`Email ${ email } already use`, 'Error', { }));
             
         } else {    
-            const token = jwt.sign({ email }, process.env.SECRET, { expiresIn: '1h' });
-            res.json(newReponse('Email checked', 'Success', { token }));
+            res.json(newReponse('Email checked', 'Success', { }));
         }
     });
 }
@@ -113,12 +142,14 @@ const login = async (req, res) => {
     const { email, password } = req.body; 
     const data = await pool.query(dbQueriesUser.getUserByEmail, [ email ]);
     
+
     if(data) { 
-        if(data.rowCount > 0) { 
+        if(data.rowCount > 0) {  
             const users = dataToUser(data.rows);
+            const token = jwt.sign(users[0], process.env.SECRET, { expiresIn: '12h' }); 
             
             (await bcryt.compare(password, data.rows[0].user_pas)) 
-            ? res.json(newReponse('Logged successfully', 'Success', users))
+            ? res.json(newReponse('Logged successfully', 'Success', { token }))
             : res.json(newReponse('Incorrect password', 'Error', { }));
         
         } else {
@@ -158,44 +189,37 @@ const getUserById = async (req, res) => {
 }
 
 const createUsers = (req, res) => {   
-    const { name, password, confirmPassword, email } = req.body;
-    const errors = []; 
+    const { name, password, lastName, email, country, phoneNumber, img } = req.body;
     
-    if(!field.checkFields([ name, password, confirmPassword, email ])) {
-        errors.push({ text: 'Please fill in all the spaces' });
-    }
-
-    if(!passwordUtil.checkPass(password, confirmPassword)) { 
-        errors.push({ text: 'passwords must be uppercase, lowercase, special characters, have more than 8 digits and match each other'});
-    } 
-    
-    if(errors.length > 0) { 
-        res.json(newReponse('Errors detected', 'Fail', { errors }));
-    
-    } else { 
-        checkAux(email, 'email',  (err, users) => { 
-            if(err) {
-                res.json(newReponse(err, 'Error', { }));
-                
-            } else if(users) {
-                res.json(newReponse(`Email ${ email } already use`, 'Error', { }));
-                
-            } else {    
-                passwordUtil.encryptPass(password, async (err, hash) => { 
-                    if(err) {
-                        res.json(newReponse(err, 'Error', { }));
-                        
-                    } else { 
-                        const data = await pool.query(dbQueriesUser.createUsers, [ name, email, hash ]);
+    passwordUtil.encryptPass(password, (err, passHash) => { 
+        if(err) {
+            res.json(newReponse(err, 'Error', { }));
             
-                        (data)
-                        ? res.json(newReponse('User created', 'Success', { id: data.rows[0].user_ide }))
-                        : res.json(newReponse('Error create user', 'Error', { }));     
-                    }
-                });
-            }
-        });
-    }
+        } else { 
+            passwordUtil.encryptPass(phoneNumber, async (err, phoneHash) => {
+                if(err) {
+                    res.json(newReponse(err, 'Error', { }));
+                
+                } else {
+                    let arrAux = [ new Date(), name, lastName, email, passHash, phoneHash, country.id ];
+                    let data;
+
+                    if (img == null) {
+                        data = await pool.query(dbQueriesUser.createUser, arrAux);
+                    
+                    } else {
+                        arrAux.push(img);
+                        data = await pool.query(dbQueriesUser.createUserWithImg, arrAux);
+                    } 
+                    
+                    (data)
+                    ? res.json(newReponse('User created', 'Success', { }))
+                    : res.json(newReponse('Error create user', 'Error', { }));
+                }
+                
+            });
+        }
+    });
 }
 
 const updateUserById = (req, res) => {
@@ -299,6 +323,7 @@ const deleteUserById = async (req, res) => {
 module.exports = { 
     checkNum,
     checkEmail,
+    checkCode,
     login,
     getUser, 
     createUsers, 
