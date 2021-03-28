@@ -4,8 +4,8 @@ CREATE SEQUENCE public.university_university_ide_seq;
 CREATE TABLE public.university (
                 university_ide INTEGER NOT NULL DEFAULT nextval('public.university_university_ide_seq'),
                 university_nam VARCHAR NOT NULL,
-				university_img BYTEA,             
-		CONSTRAINT university_pk PRIMARY KEY (university_ide)
+                university_img BYTEA,
+                CONSTRAINT university_pk PRIMARY KEY (university_ide)
 );
 
 
@@ -32,13 +32,13 @@ CREATE TABLE public.university_qualification (
 CREATE SEQUENCE public.language_languaje_ide_seq;
 
 CREATE TABLE public.language (
-                languaje_ide INTEGER NOT NULL DEFAULT nextval('public.language_languaje_ide_seq'),
+                language_ide INTEGER NOT NULL DEFAULT nextval('public.language_languaje_ide_seq'),
                 language_des VARCHAR NOT NULL,
-                CONSTRAINT language_pk PRIMARY KEY (languaje_ide)
+                CONSTRAINT language_pk PRIMARY KEY (language_ide)
 );
 
 
-ALTER SEQUENCE public.language_languaje_ide_seq OWNED BY public.language.languaje_ide;
+ALTER SEQUENCE public.language_languaje_ide_seq OWNED BY public.language.language_ide;
 
 CREATE SEQUENCE public.enterprise_enterprise_ide_seq;
 
@@ -99,7 +99,7 @@ CREATE TABLE public.user_1 (
                 user_las_nam VARCHAR NOT NULL,
                 user_pas VARCHAR NOT NULL,
                 user_ema VARCHAR NOT NULL,
-                user_num VARCHAR NOT NULL,
+                user_num BYTEA NOT NULL,
                 country_ide INTEGER NOT NULL,
                 user_img BYTEA,
                 user_des VARCHAR,
@@ -123,7 +123,7 @@ CREATE TABLE public.cv (
                 cv_ski_jso JSON,
                 cv_exp_out_jso JSON,
                 cv_qua_out_jso JSON,
-                languaje_ide INTEGER NOT NULL,
+                language_ide INTEGER NOT NULL,
                 user_ide INTEGER NOT NULL,
                 CONSTRAINT cv_pk PRIMARY KEY (cv_ide)
 );
@@ -145,10 +145,10 @@ CREATE TABLE public.connect (
 );
 
 
-CREATE SEQUENCE public._experience_experience_ide_seq;
+CREATE SEQUENCE public.experience_experience_ide_seq;
 
-CREATE TABLE public._experience (
-                experience_ide INTEGER NOT NULL DEFAULT nextval('public._experience_experience_ide_seq'),
+CREATE TABLE public.experience (
+                experience_ide INTEGER NOT NULL DEFAULT nextval('public.experience_experience_ide_seq'),
                 enterprise_ide INTEGER NOT NULL,
                 experience_dat_sta TIMESTAMP NOT NULL,
                 experience_dat_end TIMESTAMP,
@@ -159,7 +159,7 @@ CREATE TABLE public._experience (
 );
 
 
-ALTER SEQUENCE public._experience_experience_ide_seq OWNED BY public._experience.experience_ide;
+ALTER SEQUENCE public.experience_experience_ide_seq OWNED BY public.experience.experience_ide;
 
 CREATE TABLE public.cv_experience (
                 experience_ide INTEGER NOT NULL,
@@ -176,7 +176,6 @@ CREATE TABLE public.post (
                 post_dat_cre TIMESTAMP NOT NULL,
                 post_des VARCHAR,
                 post_img BYTEA,
-                Parent_post_ide INTEGER,
                 user_ide INTEGER NOT NULL,
                 CONSTRAINT post_pk PRIMARY KEY (post_ide)
 );
@@ -216,10 +215,10 @@ CREATE TABLE public.post_reaction (
 
 
 CREATE TABLE public.user_language (
-                languaje_ide INTEGER NOT NULL,
+                language_ide INTEGER NOT NULL,
                 user_ide INTEGER NOT NULL,
                 user_language_lvl VARCHAR NOT NULL,
-                CONSTRAINT user_language_pk PRIMARY KEY (languaje_ide, user_ide)
+                CONSTRAINT user_language_pk PRIMARY KEY (language_ide, user_ide)
 );
 
 
@@ -269,15 +268,15 @@ ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE public.user_language ADD CONSTRAINT language_user_language_fk
-FOREIGN KEY (languaje_ide)
-REFERENCES public.language (languaje_ide)
+FOREIGN KEY (language_ide)
+REFERENCES public.language (language_ide)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE public.cv ADD CONSTRAINT language_cv_fk
-FOREIGN KEY (languaje_ide)
-REFERENCES public.language (languaje_ide)
+FOREIGN KEY (language_ide)
+REFERENCES public.language (language_ide)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -289,7 +288,7 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-ALTER TABLE public._experience ADD CONSTRAINT enterprise__experience_fk
+ALTER TABLE public.experience ADD CONSTRAINT enterprise_experience_fk
 FOREIGN KEY (enterprise_ide)
 REFERENCES public.enterprise (enterprise_ide)
 ON DELETE NO ACTION
@@ -373,7 +372,7 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-ALTER TABLE public._experience ADD CONSTRAINT user_1__experience_fk
+ALTER TABLE public.experience ADD CONSTRAINT user_1_experience_fk
 FOREIGN KEY (user_ide)
 REFERENCES public.user_1 (user_ide)
 ON DELETE NO ACTION
@@ -415,22 +414,15 @@ ON DELETE CASCADE
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-ALTER TABLE public.cv_experience ADD CONSTRAINT _experience_cv_experience_fk
+ALTER TABLE public.cv_experience ADD CONSTRAINT experience_cv_experience_fk
 FOREIGN KEY (experience_ide)
-REFERENCES public._experience (experience_ide)
+REFERENCES public.experience (experience_ide)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE public.post_reaction ADD CONSTRAINT post_psot_reaction_fk
 FOREIGN KEY (post_ide)
-REFERENCES public.post (post_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.post ADD CONSTRAINT post_post_fk
-FOREIGN KEY (Parent_post_ide)
 REFERENCES public.post (post_ide)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION

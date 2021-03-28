@@ -4,6 +4,10 @@ const dbConfig = require('../config/db_config');
 const twilioConfig = require('../config/twilio_config');
 const twilioClient = require('twilio')(twilioConfig.sid, twilioConfig.token)
 const dbQueriesUser = require('../config/queries/user');
+const dbQueriesQualifications = require('../config/queries/user_qualification');
+const dbQueriesIdiom = require('../config/queries/user_language');
+const dbQueriesPost = require('../config/queries/post');
+const dbQueriesReaction = require('../config/queries/post_reaction');
 const passwordUtil = require('../utilities/password');
 const field = require('../utilities/field');
 const jwt = require('jsonwebtoken');
@@ -40,12 +44,59 @@ const dataToUser = (rows) => {
     return users;
 }
 
-const sms = async (phoneNumber, code) => {
+const dataToQualifications = (rows) => {
+    const qualifications = [];
+    
+    rows.forEach(element => {
+        qualifications.push({  
+            dateEnd: element.user_qualification_dat_end,
+            dateInit: element.user_qualification_dat_cre,
+            img: element.university_img,
+            university: element.university_nam,
+            qualification: qualification_nam,
+        });
+    });
+
+    return qualifications;
+}
+
+const dataToLanguage = (rows) => {
+    const idioms = [];
+
+    rows.forEach(element => {
+        idioms.push({  
+            lvl: element.user_language_lvl,
+            name: element.language_nam
+        });
+    });
+
+    return idioms;
+}
+
+const dataToReactions = (reaction) => {
+    return {
+        type: reaction.reaction_des,
+        num: reaction.count
+    }
+}
+
+const dataToPost = (post, reactions) => {
+    return {
+        tittle: post.post_tit,
+        description: post.post_des,
+        dateCreation: post.post_dat_cre,
+        img: post.post_img,
+        id: post.post_ide, 
+        reactions    
+    }
+}
+
+const sms = async (phoneNumber, code) => { 
     const jsonAux = {
         body: `Your FakedIn's code verification is ${code}`,
         from: twilioConfig.phone,
         to: phoneNumber  
-    }
+    } 
     
     await twilioClient.messages.create(jsonAux);
 }
@@ -58,9 +109,10 @@ const checkAux = async (fieldData, type, callBack) => {
             data = await pool.query(dbQueriesUser.getUserByEmail, [ fieldData ]);
             break;
 
-        case 'number':
-            data = await pool.query(dbQueriesUser.getUserByNumber, [ fieldData ]);
+        case 'number': 
+            data = await pool.query(dbQueriesUser.getUserByNumber, [ fieldData ]);  
             break;
+
         default:
             return callBack('Error on type-checkAux')
     }
@@ -78,26 +130,44 @@ const checkAux = async (fieldData, type, callBack) => {
     }
 }
 
+const getReactionWithPost = async (post) => {
+    const data = await pool.query(dbQueriesReaction.getReactionsByPostId, [ post.id ]);
+    let reactionAux = [];
+
+    if(data.rowCount > 0) { //logica incompleta.. revisar a fondo
+        for(let i = 0; i < data.rowCount; i++) { 
+            const arrAux = [ data.rows[i].post_ide, data.rows[i].reaction_ide ];
+            const reactionData = await pool.query(dbQueriesReaction.getNumReactionByPostAndReactionId, arrAux);
+            
+            reactionAux.push(dataToReactions(reactionData.rows));
+        }
+
+        return { ...post, reactions: reactionAux };
+    }
+
+    return [];
+}
+
 
 // Logic
-const checkNum = (req, res) => { 
+const checkNum = (req, res) => {  
     const { phoneNumber } = req.body; 
 
-    checkAux(phoneNumber, 'number', (err, users) => {
+    checkAux(phoneNumber, 'number', (err, users) => { 
         if(err) {
             res.json(newReponse(err, 'Error', { }));
             
-        } else if(users) {
+        } else if(users) { 
             res.json(newReponse(`Number ${ phoneNumber } already use`, 'Error', { }));
             
-        } else {    
+        } else {   
             const randomCode = Math.floor(Math.random() * (10000 - 1000)) + 1000;
-            const tokenBody = { phoneNumber: phoneNumber, code: randomCode }
+            const tokenBody = { phoneNumber: phoneNumber, code: randomCode };            
             const token = jwt.sign(tokenBody, process.env.SECRET, { expiresIn: '1h' });
             sms(phoneNumber, randomCode);
 
             res.json(newReponse('Phone number checked', 'Success', { token }));
-        }
+        } 
     });
 }
 
@@ -145,11 +215,12 @@ const login = async (req, res) => {
 
     if(data) { 
         if(data.rowCount > 0) {  
-            const users = dataToUser(data.rows);
-            const token = jwt.sign(users[0], process.env.SECRET, { expiresIn: '12h' }); 
+            let { img, ...user } = dataToUser(data.rows)[0];
+            const token = jwt.sign(user, process.env.SECRET, { expiresIn: '12h' }); 
+            img = img.toString();
             
             (await bcryt.compare(password, data.rows[0].user_pas)) 
-            ? res.json(newReponse('Logged successfully', 'Success', { token }))
+            ? res.json(newReponse('Logged successfully', 'Success', { token, img }))
             : res.json(newReponse('Incorrect password', 'Error', { }));
         
         } else {
@@ -174,50 +245,87 @@ const getUser = async (req, res) => {
     }
 }
 
-const getUserById = async (req, res) => { 
-    const { userId } = req.params;
-    const data = await pool.query(dbQueriesUser.getUserById, [ userId ]);
-    
-    if(data) {
-        (data.rowCount > 0) 
-        ? res.json(newReponse('User found', 'Success', dataToUser(data.rows)))
-        : res.json(newReponse('User not found', 'Error', { }));
+const getUserById = async (req, res) => {  /////// falta getear las experiencias
+    const token = req.headers['x-access-token'];
+    const { userId } = req.params; 
+    let idAux = 0;
+
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
 
     } else {
-        res.json(newReponse('Error searching user with id', 'Error', { }));
+        let dataUser;
+
+        if(userId == 'me') { 
+            const { iat, exp, ...aux } = jwt.verify(token, process.env.SECRET) 
+            dataUser = aux; 
+        
+        } else {
+            dataUser = await pool.query(dbQueriesUser.getUserById, [ userId ]);
+            
+            (dataUser.rowCount > 0 ) 
+            ? dataUser = dataToUser(dataUser.rows)[0]
+            : res.json(newReponse('User not found', 'Error', { }));
+            
+            dataUser = dataToUser(dataUser.rows)[0];
+        }
+
+        idAux = dataUser.id;
+        if(dataUser) { 
+            let dataQualification = await pool.query(dbQueriesQualifications.getQualificationByUserId, [ idAux ]); 
+            let dataIdioms = await pool.query(dbQueriesIdiom.getIdiomsByUserId, [ idAux ]);
+            let dataPost = await pool.query(dbQueriesPost.getPostByUserId,[ idAux ]);
+
+            (dataQualification)
+            ? dataQualification = dataToQualifications(dataQualification.rows) 
+            : dataQualification = [];
+
+            (dataIdioms) 
+            ? dataIdioms = dataToLanguage(dataIdioms.rows)
+            : dataIdioms = [];
+
+            (dataPost) 
+            ? datapost = await getReactionWithPost(dataToPost(dataPost.rows, []))
+            : dataPost = []; 
+
+            const user = { 
+                ...dataUser, 
+                activities: datapost,
+                qualifications: dataQualification,  
+                idioms: dataIdioms,
+                experiences: []
+            }
+
+            res.json(newReponse('User found', 'Success', user)); 
+           
+        } else {
+            res.json(newReponse('Error searching user with id', 'Error', { }));
+        }    
     }
 }
 
-const createUsers = (req, res) => {   
+const createUsers =  (req, res) => {   
     const { name, password, lastName, email, country, phoneNumber, img } = req.body;
     
-    passwordUtil.encryptPass(password, (err, passHash) => { 
+    passwordUtil.encryptPass(password, async(err, passHash) => { 
         if(err) {
             res.json(newReponse(err, 'Error', { }));
             
         } else { 
-            passwordUtil.encryptPass(phoneNumber, async (err, phoneHash) => {
-                if(err) {
-                    res.json(newReponse(err, 'Error', { }));
-                
-                } else {
-                    let arrAux = [ new Date(), name, lastName, email, passHash, phoneHash, country.id ];
-                    let data;
+            let arrAux = [ new Date(), name, lastName, email, passHash, phoneNumber, country.id ];
+            let data;
 
-                    if (img == null) {
-                        data = await pool.query(dbQueriesUser.createUser, arrAux);
-                    
-                    } else {
-                        arrAux.push(img);
-                        data = await pool.query(dbQueriesUser.createUserWithImg, arrAux);
-                    } 
-                    
-                    (data)
-                    ? res.json(newReponse('User created', 'Success', { }))
-                    : res.json(newReponse('Error create user', 'Error', { }));
-                }
-                
-            });
+            if (img == null) {
+                data = await pool.query(dbQueriesUser.createUser, arrAux);
+            
+            } else {
+                arrAux.push(img);
+                data = await pool.query(dbQueriesUser.createUserWithImg, arrAux);
+            } 
+            
+            (data)
+            ? res.json(newReponse('User created', 'Success', { }))
+            : res.json(newReponse('Error create user', 'Error', { }));
         }
     });
 }
