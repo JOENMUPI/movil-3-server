@@ -91,14 +91,14 @@ const dataToPost = (post, reactions) => {
     }
 }
 
-const sms = async (phoneNumber, code) => { 
+const sms = async (phoneNumber, code) => { console.log('Code:', code);
     const jsonAux = {
         body: `Your FakedIn's code verification is ${code}`,
         from: twilioConfig.phone,
         to: phoneNumber  
     } 
     
-    await twilioClient.messages.create(jsonAux);
+    //await twilioClient.messages.create(jsonAux);
 }
 
 const checkAux = async (fieldData, type, callBack) => { 
@@ -164,8 +164,8 @@ const checkNum = (req, res) => {
             const randomCode = Math.floor(Math.random() * (10000 - 1000)) + 1000;
             const tokenBody = { phoneNumber: phoneNumber, code: randomCode };            
             const token = jwt.sign(tokenBody, process.env.SECRET, { expiresIn: '1h' });
+            
             sms(phoneNumber, randomCode);
-
             res.json(newReponse('Phone number checked', 'Success', { token }));
         } 
     });
@@ -212,15 +212,14 @@ const login = async (req, res) => {
     const { email, password } = req.body; 
     const data = await pool.query(dbQueriesUser.getUserByEmail, [ email ]);
     
-
     if(data) { 
         if(data.rowCount > 0) {  
-            let { img, ...user } = dataToUser(data.rows)[0];
-            const token = jwt.sign(user, process.env.SECRET, { expiresIn: '12h' }); 
-            img = img.toString();
+            let { img, id,  ...user } = dataToUser(data.rows)[0];
+            const token = jwt.sign({ ...user, id }, process.env.SECRET, { expiresIn: '12h' }); 
             
+            user = JSON.stringify({ ...user, img: img.toString() }); 
             (await bcryt.compare(password, data.rows[0].user_pas)) 
-            ? res.json(newReponse('Logged successfully', 'Success', { token, img }))
+            ? res.json(newReponse('Logged successfully', 'Success', { token, user }))
             : res.json(newReponse('Incorrect password', 'Error', { }));
         
         } else {
@@ -248,33 +247,31 @@ const getUser = async (req, res) => {
 const getUserById = async (req, res) => {  /////// falta getear las experiencias
     const token = req.headers['x-access-token'];
     const { userId } = req.params; 
-    let idAux = 0;
 
     if(!token) {
         res.json(newReponse('User dont have a token', 'Error', { }));
 
     } else {
         let dataUser;
-
-        if(userId == 'me') { 
-            const { iat, exp, ...aux } = jwt.verify(token, process.env.SECRET) 
-            dataUser = aux; 
         
+        if(userId == 'me') {
+            const { iat, exp, ...aux } = jwt.verify(token, process.env.SECRET); 
+            dataUser = aux; 
+
         } else {
             dataUser = await pool.query(dbQueriesUser.getUserById, [ userId ]);
             
-            (dataUser.rowCount > 0 ) 
+            (dataUser.rowCount > 0) 
             ? dataUser = dataToUser(dataUser.rows)[0]
             : res.json(newReponse('User not found', 'Error', { }));
-            
-            dataUser = dataToUser(dataUser.rows)[0];
-        }
 
-        idAux = dataUser.id;
+            dataUser = dataToUser(dataUser.rows)[0]; 
+        }
+        
         if(dataUser) { 
-            let dataQualification = await pool.query(dbQueriesQualifications.getQualificationByUserId, [ idAux ]); 
-            let dataIdioms = await pool.query(dbQueriesIdiom.getIdiomsByUserId, [ idAux ]);
-            let dataPost = await pool.query(dbQueriesPost.getPostByUserId,[ idAux ]);
+            let dataQualification = await pool.query(dbQueriesQualifications.getQualificationByUserId, [ dataUser.id ]); 
+            let dataIdioms = await pool.query(dbQueriesIdiom.getIdiomsByUserId, [ dataUser.id ]);
+            let dataPost = await pool.query(dbQueriesPost.getPostByUserId,[ dataUser.id ]);
 
             (dataQualification)
             ? dataQualification = dataToQualifications(dataQualification.rows) 
