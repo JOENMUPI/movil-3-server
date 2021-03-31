@@ -28,6 +28,7 @@ app.use(cors());
 // Routes
 app.use(require('./routes/user'));
 app.use(require('./routes/country'));
+app.use(require('./routes/post'));
 
 
 // Server Listen

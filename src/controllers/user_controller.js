@@ -91,14 +91,14 @@ const dataToPost = (post, reactions) => {
     }
 }
 
-const sms = async (phoneNumber, code) => { console.log('Code:', code);
+const sms = async (phoneNumber, code) => { 
     const jsonAux = {
         body: `Your FakedIn's code verification is ${code}`,
         from: twilioConfig.phone,
         to: phoneNumber  
     } 
     
-    //await twilioClient.messages.create(jsonAux);
+    await twilioClient.messages.create(jsonAux);
 }
 
 const checkAux = async (fieldData, type, callBack) => { 
