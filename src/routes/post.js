@@ -14,10 +14,10 @@ router.post(endPoint, post.createPost);
 
 
 // Put
-
+router.put(endPoint, post.updatePostById);
 
 // Delete
-
+router.delete(`${endPoint}/:postId`, post.deletePostById);
 
 // Export
 module.exports = router;

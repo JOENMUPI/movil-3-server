@@ -11,6 +11,7 @@ const dbQueriesReaction = require('../config/queries/post_reaction');
 const passwordUtil = require('../utilities/password');
 const field = require('../utilities/field');
 const jwt = require('jsonwebtoken');
+const timeAgo = require('timeago.js');
 
 
 // Variables
@@ -80,15 +81,28 @@ const dataToReactions = (reaction) => {
     }
 }
 
-const dataToPost = (post, reactions) => {
-    return {
+const dataToPost = (post, reactions) => { 
+    let jsonAux = {
         tittle: post.post_tit,
         description: post.post_des,
-        dateCreation: post.post_dat_cre,
+        dateCreation: timeAgo.format(post.post_dat_cre),
+        dateEdit: post.post_dat_edi,
         img: post.post_img,
         id: post.post_ide, 
+        connectFlag: post.post_onl_con,
+        commentFlag: post.post_com,
         reactions    
     }
+
+    if(jsonAux.img != null) {
+        jsonAux = { ...jsonAux, img: jsonAux.img.toString() }
+    }
+
+    if(jsonAux.dateEdit != null) {
+        jsonAux = { ...jsonAux, dateEdit: timeAgo.format(jsonAux.dateEdit) } 
+    }
+
+    return jsonAux
 }
 
 const sms = async (phoneNumber, code) => { 
@@ -214,8 +228,8 @@ const login = async (req, res) => {
     
     if(data) { 
         if(data.rowCount > 0) {  
-            let { img, id,  ...user } = dataToUser(data.rows)[0];
-            const token = jwt.sign({ ...user, id }, process.env.SECRET, { expiresIn: '12h' }); 
+            let { img, ...user } = dataToUser(data.rows)[0];
+            const token = jwt.sign(user, process.env.SECRET, { expiresIn: '12h' }); 
             
             user = JSON.stringify({ ...user, img: img.toString() }); 
             (await bcryt.compare(password, data.rows[0].user_pas)) 
@@ -271,7 +285,8 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
         if(dataUser) { 
             let dataQualification = await pool.query(dbQueriesQualifications.getQualificationByUserId, [ dataUser.id ]); 
             let dataIdioms = await pool.query(dbQueriesIdiom.getIdiomsByUserId, [ dataUser.id ]);
-            let dataPost = await pool.query(dbQueriesPost.getPostByUserId,[ dataUser.id ]);
+            const dataPost = await pool.query(dbQueriesPost.getPostByUserId, [ dataUser.id ]);
+            let postsAsux = [];
 
             (dataQualification)
             ? dataQualification = dataToQualifications(dataQualification.rows) 
@@ -279,15 +294,19 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
 
             (dataIdioms) 
             ? dataIdioms = dataToLanguage(dataIdioms.rows)
-            : dataIdioms = [];
+            : dataIdioms = []; 
 
-            (dataPost) 
-            ? datapost = await getReactionWithPost(dataToPost(dataPost.rows, []))
-            : dataPost = []; 
+            if (dataPost) {
+                if(dataPost.rowCount > 0) {
+                    for(let i = 0; i < dataPost.rowCount; i++) {
+                        postsAsux.push(dataToPost(dataPost.rows[i], []));
+                    }
+                }
+            } 
 
             const user = { 
                 ...dataUser, 
-                activities: datapost,
+                activities: postsAsux,
                 qualifications: dataQualification,  
                 idioms: dataIdioms,
                 experiences: []
@@ -309,16 +328,8 @@ const createUsers =  (req, res) => {
             res.json(newReponse(err, 'Error', { }));
             
         } else { 
-            let arrAux = [ new Date(), name, lastName, email, passHash, phoneNumber, country.id ];
-            let data;
-
-            if (img == null) {
-                data = await pool.query(dbQueriesUser.createUser, arrAux);
-            
-            } else {
-                arrAux.push(img);
-                data = await pool.query(dbQueriesUser.createUserWithImg, arrAux);
-            } 
+            const arrAux = [ new Date(), name, lastName, email, passHash, phoneNumber, country.id, img ];
+            const data = await pool.query(dbQueriesUser.createUser, arrAux);
             
             (data)
             ? res.json(newReponse('User created', 'Success', { }))
@@ -414,15 +425,6 @@ const updatePassById = async (req, res) => {
     }
 }
 
-const deleteUserById = async (req, res) => {
-    const { userId } = req.params;
-    const data = await pool.query(dbQueriesUser.deleteUserById, [ userId ]);
-    
-    (data)
-    ? res.json(newReponse('User deleted successfully', 'Success', { }))
-    : res.json(newReponse('Error on delete with id', 'Error', { }));
-}
-
 
 // Export
 module.exports = { 
@@ -435,5 +437,4 @@ module.exports = {
     getUserById,
     updateUserById,
     updatePassById,
-    deleteUserById
 }

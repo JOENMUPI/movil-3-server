@@ -10,8 +10,9 @@ module.exports = {
 
     
     // Update
-    
+    updatePostById: `UPDATE ${ table } SET post_dat_edi = $1, post_tit = $2, post_des = $3, post_com = $4, post_onl_con = $5,  
+    post_img = $6 WHERE post_ide = $7 AND user_ide = $8`,
 
     // Delete
-
+    deletePostById: `DELETE FROM ${ table } WHERE post_ide = $1 AND user_ide = $2`
 };

@@ -2,9 +2,7 @@ const table = 'user_1';
 
 module.exports = {
     // Insert
-    createUser: `INSERT INTO ${ table } (user_dat_cre, user_nam, user_las_nam, user_ema, user_pas, user_num, country_ide) 
-    VALUES ($1, $2, $3, $4, $5, PGP_SYM_ENCRYPT($6,'AES_KEY'), $7)`,
-    createUserWithImg: `INSERT INTO ${ table } (user_dat_cre, user_nam, user_las_nam, user_ema, user_pas, user_num, country_ide, user_img) 
+    createUser: `INSERT INTO ${ table } (user_dat_cre, user_nam, user_las_nam, user_ema, user_pas, user_num, country_ide, user_img) 
     VALUES ($1, $2, $3, $4, $5, PGP_SYM_ENCRYPT($6,'AES_KEY'), $7, $8)`,    
     
 

@@ -23,7 +23,6 @@ router.put(`${ endPoint }/pass/:userId`, user.updatePassById);
 
 
 // Delete
-router.delete(`${ endPoint }/:userId`, user.deleteUserById);
 
 
 // Export
