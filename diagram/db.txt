@@ -1,453 +1,453 @@
-
 CREATE SEQUENCE public.university_university_ide_seq;
-
-CREATE TABLE public.university (
-                university_ide INTEGER NOT NULL DEFAULT nextval('public.university_university_ide_seq'),
-                university_nam VARCHAR NOT NULL,
-                university_img BYTEA,
-                CONSTRAINT university_pk PRIMARY KEY (university_ide)
-);
-
-
-ALTER SEQUENCE public.university_university_ide_seq OWNED BY public.university.university_ide;
-
-CREATE SEQUENCE public.qualification_qualification_seq;
-
-CREATE TABLE public.qualification (
-                qualification_ide INTEGER NOT NULL DEFAULT nextval('public.qualification_qualification_seq'),
-                qualification_nam VARCHAR NOT NULL,
-                CONSTRAINT qualification_pk PRIMARY KEY (qualification_ide)
-);
-
-
-ALTER SEQUENCE public.qualification_qualification_seq OWNED BY public.qualification.qualification_ide;
-
-CREATE TABLE public.university_qualification (
-                qualification_ide INTEGER NOT NULL,
-                university_ide INTEGER NOT NULL,
-                CONSTRAINT university_qualification_pk PRIMARY KEY (qualification_ide, university_ide)
-);
-
-
-CREATE SEQUENCE public.language_languaje_ide_seq;
-
-CREATE TABLE public.language (
-                language_ide INTEGER NOT NULL DEFAULT nextval('public.language_languaje_ide_seq'),
-                language_des VARCHAR NOT NULL,
-                CONSTRAINT language_pk PRIMARY KEY (language_ide)
-);
-
-
-ALTER SEQUENCE public.language_languaje_ide_seq OWNED BY public.language.language_ide;
-
-CREATE SEQUENCE public.enterprise_enterprise_ide_seq;
-
-CREATE TABLE public.enterprise (
-                enterprise_ide INTEGER NOT NULL DEFAULT nextval('public.enterprise_enterprise_ide_seq'),
-                enterprise_img BYTEA,
-                enterprise_nam VARCHAR NOT NULL,
-                enterprise_des VARCHAR NOT NULL,
-                CONSTRAINT enterprise_pk PRIMARY KEY (enterprise_ide)
-);
-
-
-ALTER SEQUENCE public.enterprise_enterprise_ide_seq OWNED BY public.enterprise.enterprise_ide;
-
-CREATE SEQUENCE public.reaction_reaction_ide_seq;
-
-CREATE TABLE public.reaction (
-                reaction_ide INTEGER NOT NULL DEFAULT nextval('public.reaction_reaction_ide_seq'),
-                reaction_des VARCHAR NOT NULL,
-                CONSTRAINT reaction_pk PRIMARY KEY (reaction_ide)
-);
-
-
-ALTER SEQUENCE public.reaction_reaction_ide_seq OWNED BY public.reaction.reaction_ide;
-
-CREATE SEQUENCE public.country_country_ide_seq_1;
-
-CREATE TABLE public.country (
-                country_ide INTEGER NOT NULL DEFAULT nextval('public.country_country_ide_seq_1'),
-                country_nam VARCHAR NOT NULL,
-                country_num_cod VARCHAR NOT NULL,
-                CONSTRAINT country_pk PRIMARY KEY (country_ide)
-);
-
-
-ALTER SEQUENCE public.country_country_ide_seq_1 OWNED BY public.country.country_ide;
-
-CREATE TABLE public.enterprise_country (
-                country_ide INTEGER NOT NULL,
-                enterprise_ide INTEGER NOT NULL,
-                CONSTRAINT enterprise_country_pk PRIMARY KEY (country_ide, enterprise_ide)
-);
-
-
-CREATE TABLE public.university_country (
-                country_ide INTEGER NOT NULL,
-                university_ide INTEGER NOT NULL,
-                CONSTRAINT university_country_pk PRIMARY KEY (country_ide, university_ide)
-);
-
-
-CREATE SEQUENCE public.user_1_user_ide_seq;
-
-CREATE TABLE public.user_1 (
-                user_ide INTEGER NOT NULL DEFAULT nextval('public.user_1_user_ide_seq'),
-                user_dat_cre TIMESTAMP NOT NULL,
-                user_nam VARCHAR NOT NULL,
-                user_las_nam VARCHAR NOT NULL,
-                user_pas VARCHAR NOT NULL,
-                user_ema VARCHAR NOT NULL,
-                user_num BYTEA NOT NULL,
-                country_ide INTEGER NOT NULL,
-                user_img BYTEA,
-                user_des VARCHAR,
-                user_awa_jso JSON,
-                user_int_jso JSON,
-                user_ski_jso JSON,
-                CONSTRAINT user_1_pk PRIMARY KEY (user_ide)
-);
-
-
-ALTER SEQUENCE public.user_1_user_ide_seq OWNED BY public.user_1.user_ide;
-
-CREATE SEQUENCE public.cv_cv_ide_seq;
-
-CREATE TABLE public.cv (
-                cv_ide INTEGER NOT NULL DEFAULT nextval('public.cv_cv_ide_seq'),
-                cv_des VARCHAR NOT NULL,
-                cv_int_jso JSON,
-                cv_ptf_dir VARCHAR,
-                cv_awa_jso JSON,
-                cv_ski_jso JSON,
-                cv_exp_out_jso JSON,
-                cv_qua_out_jso JSON,
-                language_ide INTEGER NOT NULL,
-                user_ide INTEGER NOT NULL,
-                CONSTRAINT cv_pk PRIMARY KEY (cv_ide)
-);
-
-
-ALTER SEQUENCE public.cv_cv_ide_seq OWNED BY public.cv.cv_ide;
-
-CREATE TABLE public.cv_qualification (
-                qualification_ide INTEGER NOT NULL,
-                cv_ide INTEGER NOT NULL,
-                CONSTRAINT cv_qualification_pk PRIMARY KEY (qualification_ide, cv_ide)
-);
-
-
-CREATE TABLE public.connect (
-                user_ide INTEGER NOT NULL,
-                user_user_ide INTEGER NOT NULL,
-                CONSTRAINT connect_pk PRIMARY KEY (user_ide, user_user_ide)
-);
-
-
-CREATE SEQUENCE public._experience_experience_ide_seq;
-
-CREATE TABLE public._experience (
-                experience_ide INTEGER NOT NULL DEFAULT nextval('public._experience_experience_ide_seq'),
-                enterprise_ide INTEGER NOT NULL,
-                experience_dat_sta TIMESTAMP NOT NULL,
-                experience_dat_end TIMESTAMP,
-                experience_job VARCHAR NOT NULL,
-                experience_typ_job VARCHAR NOT NULL,
-                user_ide INTEGER NOT NULL,
-                CONSTRAINT _experience_pk PRIMARY KEY (experience_ide)
-);
-
-
-ALTER SEQUENCE public._experience_experience_ide_seq OWNED BY public._experience.experience_ide;
-
-CREATE TABLE public.cv_experience (
-                experience_ide INTEGER NOT NULL,
-                cv_ide INTEGER NOT NULL,
-                CONSTRAINT cv_experience_pk PRIMARY KEY (experience_ide, cv_ide)
-);
-
-
-CREATE SEQUENCE public.post_publication_ide_seq_1;
-
-CREATE TABLE public.post (
-                post_ide INTEGER NOT NULL DEFAULT nextval('public.post_publication_ide_seq_1'),
-                post_tit VARCHAR NOT NULL,
-                post_dat_cre TIMESTAMP NOT NULL,
-                post_des VARCHAR,
-                post_img BYTEA,
-                user_ide INTEGER NOT NULL,
-                post_onl_con BOOLEAN NOT NULL,
-                post_com BOOLEAN NOT NULL,
-                post_dat_edi TIMESTAMP,
-                CONSTRAINT post_pk PRIMARY KEY (post_ide)
-);
-
-
-ALTER SEQUENCE public.post_publication_ide_seq_1 OWNED BY public.post.post_ide;
-
-CREATE SEQUENCE public.comentary_commentary_ide_seq;
-
-CREATE TABLE public.comentary (
-                commentary_ide INTEGER NOT NULL DEFAULT nextval('public.comentary_commentary_ide_seq'),
-                commentary_dat_cre TIMESTAMP NOT NULL,
-                comentary_txt VARCHAR NOT NULL,
-                Parent_commentary_ide INTEGER,
-                post_ide INTEGER NOT NULL,
-                user_ide INTEGER NOT NULL,
-                CONSTRAINT comentary_pk PRIMARY KEY (commentary_ide)
-);
-
-
-ALTER SEQUENCE public.comentary_commentary_ide_seq OWNED BY public.comentary.commentary_ide;
-
-CREATE TABLE public.commentary_reaction (
-                reaction_ide INTEGER NOT NULL,
-                commentary_ide INTEGER NOT NULL,
-                user_ide INTEGER NOT NULL,
-                CONSTRAINT commentary_reaction_pk PRIMARY KEY (reaction_ide, commentary_ide, user_ide)
-);
-
-
-CREATE TABLE public.post_reaction (
-                post_ide INTEGER NOT NULL,
-                reaction_ide INTEGER NOT NULL,
-                user_ide INTEGER NOT NULL,
-                CONSTRAINT post_reaction_pk PRIMARY KEY (post_ide, reaction_ide, user_ide)
-);
-
-
-CREATE TABLE public.user_language (
-                language_ide INTEGER NOT NULL,
-                user_ide INTEGER NOT NULL,
-                user_language_lvl VARCHAR NOT NULL,
-                CONSTRAINT user_language_pk PRIMARY KEY (language_ide, user_ide)
-);
-
-
-CREATE TABLE public.user_qualification (
-                qualification_ide INTEGER NOT NULL,
-                university_ide INTEGER NOT NULL,
-                user_ide INTEGER NOT NULL,
-                user_qualification_dat_cre TIMESTAMP NOT NULL,
-                user_qualification_dat_end VARCHAR,
-                CONSTRAINT user_qualification_pk PRIMARY KEY (qualification_ide, university_ide, user_ide)
-);
-
-
-ALTER TABLE public.university_qualification ADD CONSTRAINT university_university_qualification_fk
-FOREIGN KEY (university_ide)
-REFERENCES public.university (university_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.university_country ADD CONSTRAINT university_university_country_fk
-FOREIGN KEY (university_ide)
-REFERENCES public.university (university_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.university_qualification ADD CONSTRAINT qualification_university_qualification_fk
-FOREIGN KEY (qualification_ide)
-REFERENCES public.qualification (qualification_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.cv_qualification ADD CONSTRAINT qualification_cv_qualification_fk
-FOREIGN KEY (qualification_ide)
-REFERENCES public.qualification (qualification_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.user_qualification ADD CONSTRAINT university_qualification_cv_qualification_fk
-FOREIGN KEY (qualification_ide, university_ide)
-REFERENCES public.university_qualification (qualification_ide, university_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.user_language ADD CONSTRAINT language_user_language_fk
-FOREIGN KEY (language_ide)
-REFERENCES public.language (language_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.cv ADD CONSTRAINT language_cv_fk
-FOREIGN KEY (language_ide)
-REFERENCES public.language (language_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.enterprise_country ADD CONSTRAINT enterprise_enterprise_country_fk
-FOREIGN KEY (enterprise_ide)
-REFERENCES public.enterprise (enterprise_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public._experience ADD CONSTRAINT enterprise__experience_fk
-FOREIGN KEY (enterprise_ide)
-REFERENCES public.enterprise (enterprise_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.commentary_reaction ADD CONSTRAINT reaction_commentary_reaction_fk
-FOREIGN KEY (reaction_ide)
-REFERENCES public.reaction (reaction_ide)
-ON DELETE CASCADE
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.post_reaction ADD CONSTRAINT reaction_psot_reaction_fk
-FOREIGN KEY (reaction_ide)
-REFERENCES public.reaction (reaction_ide)
-ON DELETE CASCADE
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.user_1 ADD CONSTRAINT country_user_1_fk
-FOREIGN KEY (country_ide)
-REFERENCES public.country (country_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.university_country ADD CONSTRAINT country_university_country_fk
-FOREIGN KEY (country_ide)
-REFERENCES public.country (country_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.enterprise_country ADD CONSTRAINT country_enterprise_country_fk
-FOREIGN KEY (country_ide)
-REFERENCES public.country (country_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.user_qualification ADD CONSTRAINT user_1_user_qualification_fk
-FOREIGN KEY (user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.user_language ADD CONSTRAINT user_1_user_language_fk
-FOREIGN KEY (user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.post ADD CONSTRAINT user_1_post_fk
-FOREIGN KEY (user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.post_reaction ADD CONSTRAINT user_1_post_reaction_fk
-FOREIGN KEY (user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.commentary_reaction ADD CONSTRAINT user_1_commentary_reaction_fk
-FOREIGN KEY (user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.comentary ADD CONSTRAINT user_1_comentary_fk
-FOREIGN KEY (user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public._experience ADD CONSTRAINT user_1__experience_fk
-FOREIGN KEY (user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.connect ADD CONSTRAINT user_1_connect_fk
-FOREIGN KEY (user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.connect ADD CONSTRAINT user_1_connect_fk1
-FOREIGN KEY (user_user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.cv ADD CONSTRAINT user_1_cv_fk
-FOREIGN KEY (user_ide)
-REFERENCES public.user_1 (user_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.cv_experience ADD CONSTRAINT cv_cv_experience_fk
-FOREIGN KEY (cv_ide)
-REFERENCES public.cv (cv_ide)
-ON DELETE CASCADE
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.cv_qualification ADD CONSTRAINT cv_cv_qualification_fk
-FOREIGN KEY (cv_ide)
-REFERENCES public.cv (cv_ide)
-ON DELETE CASCADE
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.cv_experience ADD CONSTRAINT _experience_cv_experience_fk
-FOREIGN KEY (experience_ide)
-REFERENCES public._experience (experience_ide)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.post_reaction ADD CONSTRAINT post_psot_reaction_fk
-FOREIGN KEY (post_ide)
-REFERENCES public.post (post_ide)
-ON DELETE CASCADE
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.comentary ADD CONSTRAINT post_comentary_fk
-FOREIGN KEY (post_ide)
-REFERENCES public.post (post_ide)
-ON DELETE CASCADE
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.commentary_reaction ADD CONSTRAINT comentary_commentary_reaction_fk
-FOREIGN KEY (commentary_ide)
-REFERENCES public.comentary (commentary_ide)
-ON DELETE CASCADE
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.comentary ADD CONSTRAINT comentary_comentary_fk
-FOREIGN KEY (Parent_commentary_ide)
-REFERENCES public.comentary (commentary_ide)
-ON DELETE CASCADE
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
+    
+    CREATE TABLE public.university (
+                    university_ide INTEGER NOT NULL DEFAULT nextval('public.university_university_ide_seq'),
+                    university_nam VARCHAR NOT NULL,
+                    university_img BYTEA,
+                    CONSTRAINT university_pk PRIMARY KEY (university_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.university_university_ide_seq OWNED BY public.university.university_ide;
+    
+    CREATE SEQUENCE public.qualification_qualification_seq;
+    
+    CREATE TABLE public.qualification (
+                    qualification_ide INTEGER NOT NULL DEFAULT nextval('public.qualification_qualification_seq'),
+                    qualification_nam VARCHAR NOT NULL,
+                    CONSTRAINT qualification_pk PRIMARY KEY (qualification_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.qualification_qualification_seq OWNED BY public.qualification.qualification_ide;
+    
+    CREATE TABLE public.university_qualification (
+                    qualification_ide INTEGER NOT NULL,
+                    university_ide INTEGER NOT NULL,
+                    CONSTRAINT university_qualification_pk PRIMARY KEY (qualification_ide, university_ide)
+    );
+    
+    
+    CREATE SEQUENCE public.language_languaje_ide_seq;
+    
+    CREATE TABLE public.language (
+                    language_ide INTEGER NOT NULL DEFAULT nextval('public.language_languaje_ide_seq'),
+                    language_des VARCHAR NOT NULL,
+                    CONSTRAINT language_pk PRIMARY KEY (language_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.language_languaje_ide_seq OWNED BY public.language.language_ide;
+    
+    CREATE SEQUENCE public.enterprise_enterprise_ide_seq;
+    
+    CREATE TABLE public.enterprise (
+                    enterprise_ide INTEGER NOT NULL DEFAULT nextval('public.enterprise_enterprise_ide_seq'),
+                    enterprise_img BYTEA,
+                    enterprise_nam VARCHAR NOT NULL,
+                    enterprise_des VARCHAR NOT NULL,
+                    CONSTRAINT enterprise_pk PRIMARY KEY (enterprise_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.enterprise_enterprise_ide_seq OWNED BY public.enterprise.enterprise_ide;
+    
+    CREATE SEQUENCE public.reaction_reaction_ide_seq;
+    
+    CREATE TABLE public.reaction (
+                    reaction_ide INTEGER NOT NULL DEFAULT nextval('public.reaction_reaction_ide_seq'),
+                    reaction_des VARCHAR NOT NULL,
+                    CONSTRAINT reaction_pk PRIMARY KEY (reaction_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.reaction_reaction_ide_seq OWNED BY public.reaction.reaction_ide;
+    
+    CREATE SEQUENCE public.country_country_ide_seq_1;
+    
+    CREATE TABLE public.country (
+                    country_ide INTEGER NOT NULL DEFAULT nextval('public.country_country_ide_seq_1'),
+                    country_nam VARCHAR NOT NULL,
+                    country_num_cod VARCHAR NOT NULL,
+                    CONSTRAINT country_pk PRIMARY KEY (country_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.country_country_ide_seq_1 OWNED BY public.country.country_ide;
+    
+    CREATE TABLE public.enterprise_country (
+                    country_ide INTEGER NOT NULL,
+                    enterprise_ide INTEGER NOT NULL,
+                    CONSTRAINT enterprise_country_pk PRIMARY KEY (country_ide, enterprise_ide)
+    );
+    
+    
+    CREATE TABLE public.university_country (
+                    country_ide INTEGER NOT NULL,
+                    university_ide INTEGER NOT NULL,
+                    CONSTRAINT university_country_pk PRIMARY KEY (country_ide, university_ide)
+    );
+    
+    
+    CREATE SEQUENCE public.user_1_user_ide_seq;
+    
+    CREATE TABLE public.user_1 (
+                    user_ide INTEGER NOT NULL DEFAULT nextval('public.user_1_user_ide_seq'),
+                    user_dat_cre TIMESTAMP NOT NULL,
+                    user_nam VARCHAR NOT NULL,
+                    user_las_nam VARCHAR NOT NULL,
+                    user_pas VARCHAR NOT NULL,
+                    user_ema VARCHAR NOT NULL,
+                    user_num BYTEA NOT NULL,
+                    country_ide INTEGER NOT NULL,
+                    user_img BYTEA,
+                    user_des VARCHAR,
+                    user_awa_jso JSON,
+                    user_int_jso JSON,
+                    user_ski_jso JSON,
+                    CONSTRAINT user_1_pk PRIMARY KEY (user_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.user_1_user_ide_seq OWNED BY public.user_1.user_ide;
+    
+    CREATE SEQUENCE public.cv_cv_ide_seq;
+    
+    CREATE TABLE public.cv (
+                    cv_ide INTEGER NOT NULL DEFAULT nextval('public.cv_cv_ide_seq'),
+                    cv_des VARCHAR NOT NULL,
+                    cv_int_jso JSON,
+                    cv_ptf_dir VARCHAR,
+                    cv_awa_jso JSON,
+                    cv_ski_jso JSON,
+                    cv_exp_out_jso JSON,
+                    cv_qua_out_jso JSON,
+                    language_ide INTEGER NOT NULL,
+                    user_ide INTEGER NOT NULL,
+                    CONSTRAINT cv_pk PRIMARY KEY (cv_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.cv_cv_ide_seq OWNED BY public.cv.cv_ide;
+    
+    CREATE TABLE public.cv_qualification (
+                    qualification_ide INTEGER NOT NULL,
+                    cv_ide INTEGER NOT NULL,
+                    CONSTRAINT cv_qualification_pk PRIMARY KEY (qualification_ide, cv_ide)
+    );
+    
+    
+    CREATE TABLE public.connect (
+                    user_ide INTEGER NOT NULL,
+                    user_user_ide INTEGER NOT NULL,
+                    CONSTRAINT connect_pk PRIMARY KEY (user_ide, user_user_ide)
+    );
+    
+    
+    CREATE SEQUENCE public._experience_experience_ide_seq;
+    
+    CREATE TABLE public._experience (
+                    experience_ide INTEGER NOT NULL DEFAULT nextval('public._experience_experience_ide_seq'),
+                    enterprise_ide INTEGER NOT NULL,
+                    experience_dat_sta TIMESTAMP NOT NULL,
+                    experience_dat_end TIMESTAMP,
+                    experience_job VARCHAR NOT NULL,
+                    experience_typ_job VARCHAR NOT NULL,
+                    user_ide INTEGER NOT NULL,
+                    CONSTRAINT _experience_pk PRIMARY KEY (experience_ide)
+    );
+    
+    
+    ALTER SEQUENCE public._experience_experience_ide_seq OWNED BY public._experience.experience_ide;
+    
+    CREATE TABLE public.cv_experience (
+                    experience_ide INTEGER NOT NULL,
+                    cv_ide INTEGER NOT NULL,
+                    CONSTRAINT cv_experience_pk PRIMARY KEY (experience_ide, cv_ide)
+    );
+    
+    
+    CREATE SEQUENCE public.post_publication_ide_seq_1;
+    
+    CREATE TABLE public.post (
+                    post_ide INTEGER NOT NULL DEFAULT nextval('public.post_publication_ide_seq_1'),
+                    post_tit VARCHAR NOT NULL,
+                    post_dat_cre TIMESTAMP NOT NULL,
+                    post_des VARCHAR,
+                    post_img BYTEA,
+                    user_ide INTEGER NOT NULL,
+                    post_onl_con BOOLEAN NOT NULL,
+                    post_com BOOLEAN NOT NULL,
+                    post_dat_edi TIMESTAMP,
+                    CONSTRAINT post_pk PRIMARY KEY (post_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.post_publication_ide_seq_1 OWNED BY public.post.post_ide;
+    
+    CREATE SEQUENCE public.commentary_commentary_ide_seq;
+    
+    CREATE TABLE public.commentary (
+                    commentary_ide INTEGER NOT NULL DEFAULT nextval('public.commentary_commentary_ide_seq'),
+                    commentary_dat_cre TIMESTAMP NOT NULL,
+                    commentary_txt VARCHAR NOT NULL,
+                    Parent_commentary_ide INTEGER,
+                    post_ide INTEGER NOT NULL,
+                    user_ide INTEGER NOT NULL,
+                    commentary_dat_edi TIMESTAMP,
+                    CONSTRAINT commentary_pk PRIMARY KEY (commentary_ide)
+    );
+    
+    
+    ALTER SEQUENCE public.commentary_commentary_ide_seq OWNED BY public.commentary.commentary_ide;
+    
+    CREATE TABLE public.commentary_reaction (
+                    reaction_ide INTEGER NOT NULL,
+                    commentary_ide INTEGER NOT NULL,
+                    user_ide INTEGER NOT NULL,
+                    CONSTRAINT commentary_reaction_pk PRIMARY KEY (reaction_ide, commentary_ide, user_ide)
+    );
+    
+    
+    CREATE TABLE public.post_reaction (
+                    post_ide INTEGER NOT NULL,
+                    reaction_ide INTEGER NOT NULL,
+                    user_ide INTEGER NOT NULL,
+                    CONSTRAINT post_reaction_pk PRIMARY KEY (post_ide, reaction_ide, user_ide)
+    );
+    
+    
+    CREATE TABLE public.user_language (
+                    language_ide INTEGER NOT NULL,
+                    user_ide INTEGER NOT NULL,
+                    user_language_lvl VARCHAR NOT NULL,
+                    CONSTRAINT user_language_pk PRIMARY KEY (language_ide, user_ide)
+    );
+    
+    
+    CREATE TABLE public.user_qualification (
+                    qualification_ide INTEGER NOT NULL,
+                    university_ide INTEGER NOT NULL,
+                    user_ide INTEGER NOT NULL,
+                    user_qualification_dat_cre TIMESTAMP NOT NULL,
+                    user_qualification_dat_end VARCHAR,
+                    CONSTRAINT user_qualification_pk PRIMARY KEY (qualification_ide, university_ide, user_ide)
+    ); 
+    
+    
+    ALTER TABLE public.university_qualification ADD CONSTRAINT university_university_qualification_fk
+    FOREIGN KEY (university_ide)
+    REFERENCES public.university (university_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.university_country ADD CONSTRAINT university_university_country_fk
+    FOREIGN KEY (university_ide)
+    REFERENCES public.university (university_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.university_qualification ADD CONSTRAINT qualification_university_qualification_fk
+    FOREIGN KEY (qualification_ide)
+    REFERENCES public.qualification (qualification_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.cv_qualification ADD CONSTRAINT qualification_cv_qualification_fk
+    FOREIGN KEY (qualification_ide)
+    REFERENCES public.qualification (qualification_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.user_qualification ADD CONSTRAINT university_qualification_cv_qualification_fk
+    FOREIGN KEY (qualification_ide, university_ide)
+    REFERENCES public.university_qualification (qualification_ide, university_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.user_language ADD CONSTRAINT language_user_language_fk
+    FOREIGN KEY (language_ide)
+    REFERENCES public.language (language_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.cv ADD CONSTRAINT language_cv_fk
+    FOREIGN KEY (language_ide)
+    REFERENCES public.language (language_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.enterprise_country ADD CONSTRAINT enterprise_enterprise_country_fk
+    FOREIGN KEY (enterprise_ide)
+    REFERENCES public.enterprise (enterprise_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public._experience ADD CONSTRAINT enterprise__experience_fk
+    FOREIGN KEY (enterprise_ide)
+    REFERENCES public.enterprise (enterprise_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.commentary_reaction ADD CONSTRAINT reaction_commentary_reaction_fk
+    FOREIGN KEY (reaction_ide)
+    REFERENCES public.reaction (reaction_ide)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.post_reaction ADD CONSTRAINT reaction_psot_reaction_fk
+    FOREIGN KEY (reaction_ide)
+    REFERENCES public.reaction (reaction_ide)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.user_1 ADD CONSTRAINT country_user_1_fk
+    FOREIGN KEY (country_ide)
+    REFERENCES public.country (country_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.university_country ADD CONSTRAINT country_university_country_fk
+    FOREIGN KEY (country_ide)
+    REFERENCES public.country (country_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.enterprise_country ADD CONSTRAINT country_enterprise_country_fk
+    FOREIGN KEY (country_ide)
+    REFERENCES public.country (country_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.user_qualification ADD CONSTRAINT user_1_user_qualification_fk
+    FOREIGN KEY (user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.user_language ADD CONSTRAINT user_1_user_language_fk
+    FOREIGN KEY (user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.post ADD CONSTRAINT user_1_post_fk
+    FOREIGN KEY (user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.post_reaction ADD CONSTRAINT user_1_post_reaction_fk
+    FOREIGN KEY (user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.commentary_reaction ADD CONSTRAINT user_1_commentary_reaction_fk
+    FOREIGN KEY (user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.commentary ADD CONSTRAINT user_1_commentary_fk
+    FOREIGN KEY (user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public._experience ADD CONSTRAINT user_1__experience_fk
+    FOREIGN KEY (user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.connect ADD CONSTRAINT user_1_connect_fk
+    FOREIGN KEY (user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.connect ADD CONSTRAINT user_1_connect_fk1
+    FOREIGN KEY (user_user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.cv ADD CONSTRAINT user_1_cv_fk
+    FOREIGN KEY (user_ide)
+    REFERENCES public.user_1 (user_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.cv_experience ADD CONSTRAINT cv_cv_experience_fk
+    FOREIGN KEY (cv_ide)
+    REFERENCES public.cv (cv_ide)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.cv_qualification ADD CONSTRAINT cv_cv_qualification_fk
+    FOREIGN KEY (cv_ide)
+    REFERENCES public.cv (cv_ide)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.cv_experience ADD CONSTRAINT _experience_cv_experience_fk
+    FOREIGN KEY (experience_ide)
+    REFERENCES public._experience (experience_ide)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.post_reaction ADD CONSTRAINT post_psot_reaction_fk
+    FOREIGN KEY (post_ide)
+    REFERENCES public.post (post_ide)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.commentary ADD CONSTRAINT post_commentary_fk
+    FOREIGN KEY (post_ide)
+    REFERENCES public.post (post_ide)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.commentary_reaction ADD CONSTRAINT commentary_commentary_reaction_fk
+    FOREIGN KEY (commentary_ide)
+    REFERENCES public.commentary (commentary_ide)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    ALTER TABLE public.commentary ADD CONSTRAINT commentary_commentary_fk
+    FOREIGN KEY (Parent_commentary_ide)
+    REFERENCES public.commentary (commentary_ide)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;

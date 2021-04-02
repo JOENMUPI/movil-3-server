@@ -14,10 +14,10 @@ const newReponse = (message, typeResponse, body) => {
 }
 
 const dataToPost = (rows) => {
-    const countries = [];
+    const posts = [];
         
     rows.forEach(element => {
-        countries.push({  
+        posts.push({  
             id: element.post_ide,
             tittle: element.post_tit,
             description: element.post_des,
@@ -33,7 +33,7 @@ const dataToPost = (rows) => {
         });
     });
 
-    return countries;
+    return posts;
 }
 
 
@@ -66,14 +66,14 @@ const getpostById = async (req, res) => { //modificar
 
 const createPost = async (req, res) => {   
     const token = req.headers['x-access-token'];
-    const { description, tittle, img, commentFalg, connectFlag } = req.body;
+    const { description, tittle, img, commentFlag, connectFlag } = req.body;
     
     if(!token) {
         res.json(newReponse('User dont have a token', 'Error', { }));
 
     } else {
         const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
-        const arrAux = [ new Date(), tittle, description, commentFalg, connectFlag, img, tokenDecoded.id ];
+        const arrAux = [ new Date(), tittle, description, commentFlag, connectFlag, img, tokenDecoded.id ];
         const data = await pool.query(dbQueriesPost.createPost, arrAux);
         
         (data)
