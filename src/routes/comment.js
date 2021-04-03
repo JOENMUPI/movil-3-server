@@ -18,7 +18,7 @@ router.put(endPoint, comment.updateCommentById);
 
 
 // Delete
-router.delete(endPoint, comment.deleteCommentById);
+router.delete(`${endPoint}/:commentId`, comment.deleteCommentById);
 
 
 // Export

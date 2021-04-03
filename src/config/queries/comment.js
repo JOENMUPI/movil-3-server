@@ -7,10 +7,12 @@ module.exports = {
     
     // Select
     getCommentByPostId: `SELECT * FROM ${ table } WHERE post_ide = $1`,
+    getNumCommentByPostId: `SELECT COUNT(*) FROM ${ table } WHERE post_ide = $1`,
+    getNumResponsesByCommentId: `SELECT COUNT(*) FROM ${ table } WHERE Parent_commentary_ide = $1`, 
     
     // Update
-    updateCommentById: `UPDATE ${ table } SET commentary_dat_edi = $1, commentary_txt = $2,  
-    WHERE commentary_ide = $3 AND user_ide = $4`,
+    updateCommentById: `UPDATE ${ table } SET commentary_dat_edi = $1, commentary_txt = $2  
+    WHERE (commentary_ide = $3 AND user_ide = $4)`,
 
     // Delete
     deleteCommentById: `DELETE FROM ${ table } WHERE commentary_ide = $1 AND user_ide = $2` 

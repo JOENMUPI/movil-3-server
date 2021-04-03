@@ -116,7 +116,7 @@
     <folder id="FOLTAB232" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
     </folder>
     <folder id="FOLTAB234" populated="true" name="Indices" physicalName="Indices" type="4">
-    <index id="IDX31" populated="true" UUID="cb4c936a-ab5a-477a-9867-59c3adf7ae0e" clustered="false" name="commentary_pk" physicalName="comentary_pk" primaryKeyIndex="true" unique="false" >
+    <index id="IDX31" populated="true" UUID="cb4c936a-ab5a-477a-9867-59c3adf7ae0e" clustered="false" name="commentary_pk" physicalName="commentary_pk" primaryKeyIndex="true" unique="false" >
      <index-column id="IDC32" populated="true" UUID="722a7ae5-e4b6-41a0-bae2-caa531cc8bdf" ascendingOrDescending="UNSPECIFIED" column-ref="COL24" name="commentary_ide" physicalName="commentary_ide" />
     </index>
    </folder>

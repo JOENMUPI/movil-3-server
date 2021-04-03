@@ -8,6 +8,7 @@ const dbQueriesQualifications = require('../config/queries/user_qualification');
 const dbQueriesIdiom = require('../config/queries/user_language');
 const dbQueriesPost = require('../config/queries/post');
 const dbQueriesReaction = require('../config/queries/post_reaction');
+const dbQueriesComment = require('../config/queries/comment');
 const passwordUtil = require('../utilities/password');
 const field = require('../utilities/field');
 const jwt = require('jsonwebtoken');
@@ -81,7 +82,7 @@ const dataToReactions = (reaction) => {
     }
 }
 
-const dataToPost = (post, reactions) => { 
+const dataToPost = (post, reactions, commentaries) => { 
     let jsonAux = {
         tittle: post.post_tit,
         description: post.post_des,
@@ -91,6 +92,7 @@ const dataToPost = (post, reactions) => {
         id: post.post_ide, 
         connectFlag: post.post_onl_con,
         commentFlag: post.post_com,
+        commentaries,
         reactions    
     }
 
@@ -286,7 +288,7 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
             let dataQualification = await pool.query(dbQueriesQualifications.getQualificationByUserId, [ dataUser.id ]); 
             let dataIdioms = await pool.query(dbQueriesIdiom.getIdiomsByUserId, [ dataUser.id ]);
             const dataPost = await pool.query(dbQueriesPost.getPostByUserId, [ dataUser.id ]);
-            let postsAsux = [];
+            let postsAux = [];
 
             (dataQualification)
             ? dataQualification = dataToQualifications(dataQualification.rows) 
@@ -299,14 +301,15 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
             if (dataPost) {
                 if(dataPost.rowCount > 0) {
                     for(let i = 0; i < dataPost.rowCount; i++) {
-                        postsAsux.push(dataToPost(dataPost.rows[i], []));
+                        const comentaries = await pool.query(dbQueriesComment.getNumCommentByPostId, [ dataPost.rows[i].post_ide ]);
+                        postsAux.push(dataToPost(dataPost.rows[i], [], comentaries.rows[0].count));
                     }
                 }
             } 
 
             const user = { 
                 ...dataUser, 
-                activities: postsAsux,
+                activities: postsAux,
                 qualifications: dataQualification,  
                 idioms: dataIdioms,
                 experiences: []
