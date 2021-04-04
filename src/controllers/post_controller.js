@@ -1,7 +1,10 @@
 const Pool = require('pg').Pool;
 const dbConfig = require('../config/db_config');
 const dbQueriesPost = require('../config/queries/post');
+const dbQueriesPostReaction = require('../config/queries/post_reaction');
+const dbQueriesReaction = require('../config/queries/reaction');
 const jwt = require('jsonwebtoken');
+const timeAgo = require('timeago.js');
 
 
 // Variables
@@ -13,54 +16,87 @@ const newReponse = (message, typeResponse, body) => {
     return {  message, typeResponse, body }
 }
 
-const dataToPost = (rows) => {
-    const posts = [];
-        
-    rows.forEach(element => {
-        posts.push({  
-            id: element.post_ide,
-            tittle: element.post_tit,
-            description: element.post_des,
-            img: element.post_img,
-            dateCreation: element.post_dat_cre,
-            dateEdit: element.post_dat_edi,
-            connectFlag: element.post_onl_con,
-            commentaryFlag: element.post_com,
-            userName: element.user_nam,
-            userLastName: element.user_las_nam,
-            userIde: element.user_ide,
-            userImg: element.user_img
-        });
-    });
+const dataToPost = (element, reactions, comentaries) => {    
+    let postAux = {  
+        id: element.post_ide,
+        tittle: element.post_tit,
+        description: element.post_des,
+        img: element.post_img,
+        dateCreation: timeAgo.format(element.post_dat_cre),
+        dateEdit: element.post_dat_edi,
+        connectFlag: element.post_onl_con,
+        commentaryFlag: element.post_com,
+        userName: element.user_nam,
+        userLastName: element.user_las_nam,
+        userIde: element.user_ide,
+        userImg: element.user_img,
+        reactions,
+        comentaries
+    }
 
-    return posts;
+    if (postAux.dateEdit != null) {
+        postAux.dateEdit = timeAgo.format(postAux.dateEdit);
+    }
+
+    if(postAux.userImg != null) {
+        postAux.userImg = postAux.userImg.toString();
+    }
+    
+    if(postAux.img != null) {
+        postAux.img = postAux.img.toString();
+    }
+
+    return postAux;
 }
 
 
 // Logic
-const getpostByUserId = async (req, res) => { //modificar
-    const data = await pool.query(dbQueriesPost.getAllCountries);
-    
-    if(data) { 
-        (data.rowCount > 0)
-        ? res.json(newReponse('All countries', 'Success', dataToCountries(data.rows)))
-        : res.json(newReponse('Countries not found', 'Success', []));
-    
-    } else {
-        res.json(newReponse('Error searhing posts', 'Error', { }));
-    }
-}
+const getPostByUserId = async (req, res) => {
+    const token = req.headers['x-access-token'];
+    const { userId } = req.params;
 
-const getpostById = async (req, res) => { //modificar
-    const data = await pool.query(dbQueriesPost.getAllCountries);
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
     
-    if(data) { 
-        (data.rowCount > 0)
-        ? res.json(newReponse('All countries', 'Success', dataToCountries(data.rows)))
-        : res.json(newReponse('Countries not found', 'Success', []));
-    
-    } else {
-        res.json(newReponse('Error searhing post', 'Error', { }));
+    } else { 
+        const dataPost = await pool.query(dbQueriesPost.getPostByUserId, [ userId ]);
+        
+        if(!dataPost) {
+            res.json(newReponse('Error searching post', 'Error', {})); 
+
+        } else { 
+            const allReactions = await pool.query(dbQueriesReaction.getAllReactions);
+            let allReactionsAux  = [];
+            let postsAux = [];
+
+            if (allReactions) {
+                allReactions.rows.forEach(reaction => {
+                    allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide ,num: 0 });
+                });
+            } 
+
+            for(let i = 0; i < dataPost.rowCount; i++) { 
+                const reactionPost = await pool.query(dbQueriesPostReaction.getReactionsByPostId, [ dataPost.rows[i].post_ide ]);
+                const comentaries = await pool.query(dbQueriesComment.getNumCommentByPostId, [ dataPost.rows[i].post_ide ]);
+                let reactions = allReactionsAux;
+
+                if(reactionPost) {
+                    reactionPost.rows.forEach(item => {
+                        reactions = reactions.map(reaction => {
+                            if(reaction.id == item.reaction_ide) {
+                                return { ...reaction, num: reaction.num + 1 }
+                            }
+
+                            return reaction;
+                        });
+                    });
+                }
+
+                postsAux.push(dataToPost(dataPost.rows[i], reactions, comentaries.rows[0].count)); 
+            }
+
+            res.json(newReponse('Posts', 'Success', postsAux)); 
+        }
     }
 }
 
@@ -120,6 +156,7 @@ const deletePostById = async (req, res) => {
 
 // Export
 module.exports = { 
+    getPostByUserId,
     createPost,
     updatePostById,
     deletePostById

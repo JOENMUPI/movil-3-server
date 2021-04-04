@@ -51,6 +51,28 @@ insert into qualification (qualification_nam) values ('Contaduría Pública');
 insert into qualification (qualification_nam) values ('Administración de Empresas');
 insert into qualification (qualification_nam) values ('Ingeniería en Producción Animal');
 
+insert into reaction (reaction_des) values ('bulb-outline');
+insert into reaction (reaction_des) values ('beer-outline');
+insert into reaction (reaction_des) values ('alert-outline');
+insert into reaction (reaction_des) values ('flame-outline');
+insert into reaction (reaction_des) values ('glasses-outline');
+insert into reaction (reaction_des) values ('happy-outline');
+insert into reaction (reaction_des) values ('flash-outline');
+insert into reaction (reaction_des) values ('pizza-outline');
+insert into reaction (reaction_des) values ('paw-outline');
+insert into reaction (reaction_des) values ('restaurant-outline');
+insert into reaction (reaction_des) values ('ribbon-outline');
+insert into reaction (reaction_des) values ('rocket-outline');
+insert into reaction (reaction_des) values ('rose-outline');
+insert into reaction (reaction_des) values ('sad-outline');
+insert into reaction (reaction_des) values ('sparkles-outline');
+insert into reaction (reaction_des) values ('skull-outline');
+insert into reaction (reaction_des) values ('trophy-outline');
+insert into reaction (reaction_des) values ('thumbs-up-outline');
+insert into reaction (reaction_des) values ('thumbs-down-outline');
+
+
+
 
 
 

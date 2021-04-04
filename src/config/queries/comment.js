@@ -6,7 +6,8 @@ module.exports = {
     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
     
     // Select
-    getCommentByPostId: `SELECT * FROM ${ table } WHERE post_ide = $1`,
+    getCommentByPostId: `SELECT c.*, u.* FROM ${ table } AS c
+    JOIN user_1 AS u ON u.user_ide = c.user_ide WHERE c.post_ide = $1`,
     getNumCommentByPostId: `SELECT COUNT(*) FROM ${ table } WHERE post_ide = $1`,
     getNumResponsesByCommentId: `SELECT COUNT(*) FROM ${ table } WHERE Parent_commentary_ide = $1`, 
     

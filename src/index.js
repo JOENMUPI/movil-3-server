@@ -30,6 +30,7 @@ app.use(require('./routes/user'));
 app.use(require('./routes/country'));
 app.use(require('./routes/post'));
 app.use(require('./routes/comment'));
+app.use(require('./routes/reaction'));
 
 
 // Server Listen

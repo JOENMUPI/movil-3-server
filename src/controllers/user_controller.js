@@ -7,7 +7,8 @@ const dbQueriesUser = require('../config/queries/user');
 const dbQueriesQualifications = require('../config/queries/user_qualification');
 const dbQueriesIdiom = require('../config/queries/user_language');
 const dbQueriesPost = require('../config/queries/post');
-const dbQueriesReaction = require('../config/queries/post_reaction');
+const dbQueriesReaction = require('../config/queries/reaction');
+const dbQueriesPostReaction = require('../config/queries/post_reaction');
 const dbQueriesComment = require('../config/queries/comment');
 const passwordUtil = require('../utilities/password');
 const field = require('../utilities/field');
@@ -28,7 +29,7 @@ const dataToUser = (rows) => {
     const users = [];
         
     rows.forEach(element => {
-        users.push({  
+        let user = {  
             description: element.user_des,
             name: element.user_nam,
             lastName: element.user_las_nam,
@@ -40,7 +41,13 @@ const dataToUser = (rows) => {
             interests: element.user_int_jso,
             skills: element.user_ski_jso,
             id: element.user_ide
-        });
+        }
+
+        if(user.img != null) {
+            user.img = user.img.toString();
+        }
+
+        users.push(user);
     });
 
     return users;
@@ -147,6 +154,7 @@ const checkAux = async (fieldData, type, callBack) => {
 }
 
 const getReactionWithPost = async (post) => {
+    
     const data = await pool.query(dbQueriesReaction.getReactionsByPostId, [ post.id ]);
     let reactionAux = [];
 
@@ -233,7 +241,7 @@ const login = async (req, res) => {
             let { img, ...user } = dataToUser(data.rows)[0];
             const token = jwt.sign(user, process.env.SECRET, { expiresIn: '12h' }); 
             
-            user = JSON.stringify({ ...user, img: img.toString() }); 
+            user = JSON.stringify({ ...user, img }); 
             (await bcryt.compare(password, data.rows[0].user_pas)) 
             ? res.json(newReponse('Logged successfully', 'Success', { token, user }))
             : res.json(newReponse('Incorrect password', 'Error', { }));
@@ -269,10 +277,10 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
 
     } else {
         let dataUser;
+        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
         
         if(userId == 'me') {
-            const { iat, exp, ...aux } = jwt.verify(token, process.env.SECRET); 
-            dataUser = aux; 
+            dataUser = tokenDecoded; 
 
         } else {
             dataUser = await pool.query(dbQueriesUser.getUserById, [ userId ]);
@@ -285,9 +293,9 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
         }
         
         if(dataUser) { 
+            const dataPost = await pool.query(dbQueriesPost.getPostByUserIdOnUser, [ dataUser.id ]);
             let dataQualification = await pool.query(dbQueriesQualifications.getQualificationByUserId, [ dataUser.id ]); 
             let dataIdioms = await pool.query(dbQueriesIdiom.getIdiomsByUserId, [ dataUser.id ]);
-            const dataPost = await pool.query(dbQueriesPost.getPostByUserId, [ dataUser.id ]);
             let postsAux = [];
 
             (dataQualification)
@@ -296,16 +304,44 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
 
             (dataIdioms) 
             ? dataIdioms = dataToLanguage(dataIdioms.rows)
-            : dataIdioms = []; 
+            : dataIdioms = [];
 
             if (dataPost) {
-                if(dataPost.rowCount > 0) {
-                    for(let i = 0; i < dataPost.rowCount; i++) {
-                        const comentaries = await pool.query(dbQueriesComment.getNumCommentByPostId, [ dataPost.rows[i].post_ide ]);
-                        postsAux.push(dataToPost(dataPost.rows[i], [], comentaries.rows[0].count));
+                const allReactions = await pool.query(dbQueriesReaction.getAllReactions);
+                let allReactionsAux  = [];
+    
+                if (allReactions) {
+                    allReactions.rows.forEach(reaction => {
+                        allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide , num: 0, me: false });
+                    });
+                } 
+    
+                for(let i = 0; i < dataPost.rowCount; i++) { 
+                    const reactionPost = await pool.query(dbQueriesPostReaction.getReactionsByPostId, [ dataPost.rows[i].post_ide ]);
+                    const comentaries = await pool.query(dbQueriesComment.getNumCommentByPostId, [ dataPost.rows[i].post_ide ]);
+                    let reactions = allReactionsAux;
+    
+                    if(reactionPost) {
+                        reactionPost.rows.forEach(item => {
+                            reactions = reactions.map(reaction => {
+                                let aux = reaction;
+                                
+                                if(reaction.id == item.reaction_ide) {
+                                    aux = { ...reaction, num: reaction.num + 1 }
+                                }
+
+                                if(item.user_ide == tokenDecoded.id) {
+                                    aux = { ...reaction, me: true }
+                                }
+    
+                                return aux;
+                            });
+                        });
                     }
+                                                                
+                    postsAux.push(dataToPost(dataPost.rows[i], reactions, comentaries.rows[0].count)); 
                 }
-            } 
+            }
 
             const user = { 
                 ...dataUser, 

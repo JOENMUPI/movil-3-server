@@ -15,7 +15,11 @@ const newReponse = (message, typeResponse, body) => {
 }
 
 const dataToComment = (element, responses) => {
-    let comment = {  
+    let comment = {
+            name: element.user_nam,
+            lastName: element.user_las_nam,
+            userId: element.user_ide,
+            img: element.user_img.toString(),
             id: element.commentary_ide,
             text: element.commentary_txt,
             parentId: element.Parent_commentary_ide,
@@ -50,11 +54,13 @@ const getCommentByPostId = async (req, res) => {
             if (data.rowCount > 0) {
                 for(let i = 0; i < data.rowCount; i ++) {
                     const responsesNum = await pool.query(dbQueriesCommentary.getNumResponsesByCommentId, [ data.rows[i].commentary_ide ]);
+                    let commentary = dataToComment(data.rows[i], 0);
                     
-                    commentaries.push(dataToComment(data.rows[i], 0));
                     if(responsesNum) {
-                        commentaries.responses = responsesNum.rows[0].count;
+                        commentary.responses = responsesNum.rows[0].count;
                     }
+
+                    commentaries.push(commentary);
                 }
             } 
 
@@ -65,11 +71,6 @@ const getCommentByPostId = async (req, res) => {
         } else {
             res.json(newReponse('Error searhing Comment', 'Error', { }));
         }
-
-        
-        
-
-        
     }
 }
 
