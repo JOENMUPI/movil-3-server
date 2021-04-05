@@ -15,5 +15,5 @@ module.exports = {
     
 
     // Delete
-
+    deletePostReactionById: `DELETE FROM ${ table } WHERE post_ide = $1 AND reaction_ide = $2 AND user_ide = $3`
 };

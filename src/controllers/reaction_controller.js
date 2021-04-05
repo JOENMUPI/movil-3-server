@@ -2,6 +2,8 @@ const Pool = require('pg').Pool;
 const dbConfig = require('../config/db_config');
 const dbQueriesReaction = require('../config/queries/reaction');
 const dbQueriesPostReaction = require('../config/queries/post_reaction');
+const jwt = require('jsonwebtoken');
+
 
 // Variables
 const pool = new Pool(dbConfig);
@@ -40,7 +42,7 @@ const getReactions = async (req, res) => {
     }
 }
 
-const createReactionComment = async (req, res) => {
+const createPostReaction = async (req, res) => {
     const token = req.headers['x-access-token'];
     const { postId, reactionId } = req.body;
     
@@ -53,14 +55,32 @@ const createReactionComment = async (req, res) => {
         const data = await pool.query(dbQueriesPostReaction.createPostReaction, arrAux);
         
         (data)
-        ? res.json(newReponse('Post created', 'Success', { }))
+        ? res.json(newReponse('Post-reaction created', 'Success', { }))
         : res.json(newReponse('Error create post', 'Error', { }));
     }
 }
  
+const deletePostReactionById = async (req, res) => {
+    const token = req.headers['x-access-token'];
+    const { postId, reactionId } = req.params;
+
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+    
+    } else {
+        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
+        const arrAux = [ postId, reactionId, tokenDecoded.id ];
+        const data = await pool.query(dbQueriesPostReaction.deletePostReactionById, arrAux);
+
+        (data)
+        ? res.json(newReponse('Detele post-reaction successfully', 'Success', { }))
+        : res.json(newReponse('Error on delete with id', 'Error', { }));
+    }
+}
 
 // Export
 module.exports = { 
     getReactions,
-    createReactionComment
+    createPostReaction,
+    deletePostReactionById
 }
