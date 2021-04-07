@@ -18,8 +18,9 @@ router.post(`${ endPoint }/check/code`, user.checkCode);
 
 
 // Put
-router.put(`${ endPoint }/:userId`, user.updateUserById);
-router.put(`${ endPoint }/pass/:userId`, user.updatePassById);
+router.put(endPoint, user.updateUserById);
+router.put(`${ endPoint }/pass`, user.updatePassById);
+router.put(`${ endPoint }/field/:field`, user.updateFieldById);
 
 
 // Delete

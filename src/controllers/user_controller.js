@@ -38,18 +38,30 @@ const dataToUser = (rows) => {
             img: element.user_img,
             email: element.user_ema,
             awards: element.user_awa_jso,
-            interests: element.user_int_jso,
+            interest: element.user_int_jso,
             skills: element.user_ski_jso,
             id: element.user_ide
         }
-
+         
         if(user.img != null) {
             user.img = user.img.toString();
         }
 
+        (user.skills == null)
+        ? user.skills = []
+        : user.skills = user.skills.data;
+        
+        (user.interest == null)
+        ? user.interest = []
+        : user.interest = user.interest.data;
+        
+        (user.awards == null)
+        ? user.awards = []
+        : user.awards = user.awards.data;
+
         users.push(user);
     });
-
+    
     return users;
 }
 
@@ -238,10 +250,10 @@ const login = async (req, res) => {
     
     if(data) { 
         if(data.rowCount > 0) {  
-            let { img, ...user } = dataToUser(data.rows)[0];
+            let { img, interests, skills, awards, ...user } = dataToUser(data.rows)[0]; 
             const token = jwt.sign(user, process.env.SECRET, { expiresIn: '12h' }); 
             
-            user = JSON.stringify({ ...user, img }); 
+            user = JSON.stringify({ ...user, interests, skills, awards, img }); 
             (await bcryt.compare(password, data.rows[0].user_pas)) 
             ? res.json(newReponse('Logged successfully', 'Success', { token, user }))
             : res.json(newReponse('Incorrect password', 'Error', { }));
@@ -276,23 +288,14 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
         res.json(newReponse('User dont have a token', 'Error', { }));
 
     } else {
-        let dataUser;
         const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
+        let dataUser = await pool.query(dbQueriesUser.getUserById, [ userId ]);
         
-        if(userId == 'me') {
-            dataUser = tokenDecoded; 
-
-        } else {
-            dataUser = await pool.query(dbQueriesUser.getUserById, [ userId ]);
-            
-            (dataUser.rowCount > 0) 
-            ? dataUser = dataToUser(dataUser.rows)[0]
-            : res.json(newReponse('User not found', 'Error', { }));
-
-            dataUser = dataToUser(dataUser.rows)[0]; 
-        }
+        (dataUser.rowCount > 0) 
+        ? dataUser = dataToUser(dataUser.rows)[0]
+        : res.json(newReponse('User not found', 'Error', { }));
         
-        if(dataUser) { 
+        if(dataUser) {  
             const dataPost = await pool.query(dbQueriesPost.getPostByUserIdOnUser, [ dataUser.id ]);
             let dataQualification = await pool.query(dbQueriesQualifications.getQualificationByUserId, [ dataUser.id ]); 
             let dataIdioms = await pool.query(dbQueriesIdiom.getIdiomsByUserId, [ dataUser.id ]);
@@ -347,7 +350,7 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
                 qualifications: dataQualification,  
                 idioms: dataIdioms,
                 experiences: []
-            }
+            } 
 
             res.json(newReponse('User found', 'Success', user)); 
            
@@ -373,6 +376,32 @@ const createUsers =  (req, res) => {
             : res.json(newReponse('Error create user', 'Error', { }));
         }
     });
+}
+
+const updateFieldById = async (req, res) => { 
+    const token = req.headers['x-access-token'];
+    const { field } = req.params;
+
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+
+    } else {
+        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
+        let data;
+        
+        switch(field) {
+            case 'skill':
+                data = await pool.query(dbQueriesUser.updateSkillById, [ req.body, tokenDecoded.id ]);
+                break;
+            case 'interest':
+                data = await pool.query(dbQueriesUser.updateInterestById, [ req.body, tokenDecoded.id ]);
+                break;
+        }
+
+        (data)
+        ? res.json(newReponse('Updated successfully', 'Success', { }))
+        : res.json(newReponse('Error on skill (PUT)', 'Error', { }));
+    }
 }
 
 const updateUserById = (req, res) => {
@@ -474,4 +503,5 @@ module.exports = {
     getUserById,
     updateUserById,
     updatePassById,
+    updateFieldById,
 }

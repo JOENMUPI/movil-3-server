@@ -18,6 +18,8 @@ module.exports = {
     // Update
     updateUserById: `UPDATE ${ table } SET user_nam = $1, user_ema = $2, WHERE user_ide = $3`,
     updatePassById: `UPDATE ${ table } SET user_pas = $1 WHERE user_ide = $2`,
+    updateSkillById: `UPDATE ${ table } SET user_ski_jso = $1 WHERE user_ide = $2`,
+    updateInterestById: `UPDATE ${ table } SET user_int_jso = $1 WHERE user_ide = $2`,
 
 
     // Delete
