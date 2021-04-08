@@ -6,9 +6,9 @@ module.exports = {
    
     
     // Select
-    getReactionsByPostId: `Select * FROM ${ table } WHERE post_ide = $1`, 
+    getReactionsByPostId: `Select * FROM ${ table } WHERE post_ide = $1`,
     getNumReactionByPostAndReactionId: `SELECT COUNT(pr.*) FROM ${ table } AS pr 
-    JOIN reaction AS r ON ps.reaction_ide = r.reaction_ide WHERE pr.post_ide = $1 AND pr.reaction_ide = $2`,
+    JOIN reaction AS r ON pr.reaction_ide = r.reaction_ide WHERE pr.post_ide = $1 AND pr.reaction_ide = $2`,
     
     
     // Update

@@ -1,6 +1,8 @@
 const Pool = require('pg').Pool;
 const dbConfig = require('../config/db_config');
 const dbQueriesCommentary = require('../config/queries/comment');
+const dbQueriesCommentaryReaction = require('../config/queries/commentary_reaction');
+const dbQueriesReaction = require('../config/queries/reaction');
 const jwt = require('jsonwebtoken');
 const timeAgo = require('timeago.js');
 
@@ -14,12 +16,12 @@ const newReponse = (message, typeResponse, body) => {
     return {  message, typeResponse, body }
 }
 
-const dataToComment = (element, responses) => {
+const dataToComment = (element, responses, reactions) => {
     let comment = {
             name: element.user_nam,
             lastName: element.user_las_nam,
             userId: element.user_ide,
-            img: element.user_img.toString(),
+            img: element.user_img,
             id: element.commentary_ide,
             text: element.commentary_txt,
             parentId: element.Parent_commentary_ide,
@@ -27,7 +29,12 @@ const dataToComment = (element, responses) => {
             userId: element.user_ide,
             dateCreation: timeAgo.format(element.commentary_dat_cre),
             dateEdit: element.commentary_dat_edi,
-            responses
+            responses,
+            reactions
+        }
+
+        if(comment.img != null) {
+            comment.img = comment.img.toString();
         }
 
         if(comment.dateEdit != null) { 
@@ -48,23 +55,52 @@ const getCommentByPostId = async (req, res) => {
 
     } else {
         const data = await pool.query(dbQueriesCommentary.getCommentByPostId, [ postId ]);
+        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
         let commentaries = [];
 
         if(data) { 
-            if (data.rowCount > 0) {
-                for(let i = 0; i < data.rowCount; i ++) {
-                    const responsesNum = await pool.query(dbQueriesCommentary.getNumResponsesByCommentId, [ data.rows[i].commentary_ide ]);
-                    let commentary = dataToComment(data.rows[i], 0);
-                    
-                    if(responsesNum) {
-                        commentary.responses = responsesNum.rows[0].count;
-                    }
+            const allReactions = await pool.query(dbQueriesReaction.getAllReactions);
+            let allReactionsAux  = [];
+            let commentariesAux = [];
 
-                    commentaries.push(commentary);
-                }
+            if (allReactions) {
+                allReactions.rows.forEach(reaction => {
+                    allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide , num: 0, me: false });
+                });
             } 
+                //te falta las reacciones... aqui quedastes
+            for(let i = 0; i < data.rowCount; i ++) {
+                const arrAux = [ dataPost.rows[i].post_ide ];
+                const reactionComment = await pool.query(dbQueriesCommentaryReaction.getReactionsByCommentaryId, arrAux);
+                const responsesNum = await pool.query(dbQueriesCommentary.getNumResponsesByCommentId, [ data.rows[i].commentary_ide ]);
+                let commentary = dataToComment(data.rows[i], 0, []);
+                let reactions = allReactionsAux;
 
-            //////////aqui flata tareme al usuario del comentariooooo
+                if(reactionComment) {
+                    reactionComment.rows.forEach(item => {
+                        reactions = reactions.map(reaction => { 
+                            let aux = reaction; 
+                            
+                            if(reaction.id == item.reaction_ide) { 
+                                (item.user_ide == tokenDecoded.id)  
+                                ? aux = { ...aux, num: reaction.num + 1, me: true }
+                                : aux = { ...aux, num: reaction.num + 1, me: false }
+                            }
+
+                            return aux;
+                        });
+                    });
+                }
+
+                commentariesAux.push(dataToComment(data.rows[i], comentaries.rows[0].count, reactions)); 
+                
+                if(responsesNum) {
+                    commentary.responses = responsesNum.rows[0].count;
+                }
+
+                commentaries.push(commentary);
+            }
+             
             
             res.json(newReponse('Commentaries', 'Success', commentaries))
         
@@ -87,7 +123,7 @@ const createComment = async (req, res) => {
         const data = await pool.query(dbQueriesCommentary.createComment, arrAux);
         
         (data)
-        ? res.json(newReponse('Comment created', 'Success', dataToComment(data.rows[0], 0)))
+        ? res.json(newReponse('Comment created', 'Success', dataToComment(data.rows[0], 0, [])))
         : res.json(newReponse('Error create comment', 'Error', { }));
     }
 }

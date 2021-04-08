@@ -3,6 +3,7 @@ const dbConfig = require('../config/db_config');
 const dbQueriesPost = require('../config/queries/post');
 const dbQueriesPostReaction = require('../config/queries/post_reaction');
 const dbQueriesReaction = require('../config/queries/reaction');
+const dbQueriesComment = require('../config/queries/comment');
 const jwt = require('jsonwebtoken');
 const timeAgo = require('timeago.js');
 
@@ -25,10 +26,11 @@ const dataToPost = (element, reactions, comentaries) => {
         dateCreation: timeAgo.format(element.post_dat_cre),
         dateEdit: element.post_dat_edi,
         connectFlag: element.post_onl_con,
-        commentaryFlag: element.post_com,
+        commentFlag: element.post_com,
         userName: element.user_nam,
         userLastName: element.user_las_nam,
-        userIde: element.user_ide,
+        userId: element.user_ide,
+        userEmail: element.user_ema,
         userImg: element.user_img,
         reactions,
         comentaries
@@ -51,16 +53,16 @@ const dataToPost = (element, reactions, comentaries) => {
 
 
 // Logic
-const getPostByUserId = async (req, res) => {
+const getPostForHome = async (req, res) => {
     const token = req.headers['x-access-token'];
-    const { userId } = req.params;
 
     if(!token) {
         res.json(newReponse('User dont have a token', 'Error', { }));
     
     } else { 
-        const dataPost = await pool.query(dbQueriesPost.getPostByUserId, [ userId ]);
-        
+        const dataPost = await pool.query(dbQueriesPost.getPosts);
+        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
+    
         if(!dataPost) {
             res.json(newReponse('Error searching post', 'Error', {})); 
 
@@ -71,7 +73,7 @@ const getPostByUserId = async (req, res) => {
 
             if (allReactions) {
                 allReactions.rows.forEach(reaction => {
-                    allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide ,num: 0 });
+                    allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide , num: 0, me: false });
                 });
             } 
 
@@ -82,16 +84,20 @@ const getPostByUserId = async (req, res) => {
 
                 if(reactionPost) {
                     reactionPost.rows.forEach(item => {
-                        reactions = reactions.map(reaction => {
-                            if(reaction.id == item.reaction_ide) {
-                                return { ...reaction, num: reaction.num + 1 }
+                        reactions = reactions.map(reaction => { 
+                            let aux = reaction; 
+                            
+                            if(reaction.id == item.reaction_ide) { 
+                                (item.user_ide == tokenDecoded.id)  
+                                ? aux = { ...aux, num: reaction.num + 1, me: true }
+                                : aux = { ...aux, num: reaction.num + 1, me: false }
                             }
 
-                            return reaction;
+                            return aux;
                         });
                     });
                 }
-
+                                                            
                 postsAux.push(dataToPost(dataPost.rows[i], reactions, comentaries.rows[0].count)); 
             }
 
@@ -156,7 +162,7 @@ const deletePostById = async (req, res) => {
 
 // Export
 module.exports = { 
-    getPostByUserId,
+    getPostForHome,
     createPost,
     updatePostById,
     deletePostById

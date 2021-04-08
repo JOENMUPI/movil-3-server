@@ -7,7 +7,7 @@ const endPoint = '/post';
 
 
 // Get
-router.get(`${ endPoint }/:userId`, post.getPostByUserId);
+router.get(endPoint, post.getPostForHome);
 
 
 // Post
