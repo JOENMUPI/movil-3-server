@@ -126,7 +126,7 @@ const dataToPost = (post, reactions, commentaries) => {
     return jsonAux
 }
 
-const sms = async (phoneNumber, code) => { 
+const sms = async (phoneNumber, code) => {  
     const jsonAux = {
         body: `Your FakedIn's code verification is ${code}`,
         from: twilioConfig.phone,
@@ -164,26 +164,6 @@ const checkAux = async (fieldData, type, callBack) => {
         return callBack('Error on query');
     }
 }
-
-const getReactionWithPost = async (post) => {
-    
-    const data = await pool.query(dbQueriesReaction.getReactionsByPostId, [ post.id ]);
-    let reactionAux = [];
-
-    if(data.rowCount > 0) { //logica incompleta.. revisar a fondo
-        for(let i = 0; i < data.rowCount; i++) { 
-            const arrAux = [ data.rows[i].post_ide, data.rows[i].reaction_ide ];
-            const reactionData = await pool.query(dbQueriesReaction.getNumReactionByPostAndReactionId, arrAux);
-            
-            reactionAux.push(dataToReactions(reactionData.rows));
-        }
-
-        return { ...post, reactions: reactionAux };
-    }
-
-    return [];
-}
-
 
 // Logic
 const checkNum = (req, res) => {  

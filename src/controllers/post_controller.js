@@ -85,12 +85,15 @@ const getPostForHome = async (req, res) => {
                 if(reactionPost) {
                     reactionPost.rows.forEach(item => {
                         reactions = reactions.map(reaction => { 
-                            let aux = reaction; 
+                            let aux = { ...reaction, me: false }; 
                             
                             if(reaction.id == item.reaction_ide) { 
-                                (item.user_ide == tokenDecoded.id)  
-                                ? aux = { ...aux, num: reaction.num + 1, me: true }
-                                : aux = { ...aux, num: reaction.num + 1, me: false }
+                                if (item.user_ide == tokenDecoded.id) {
+                                    aux = { ...aux, num: reaction.num + 1, me: true }
+                                
+                                } else {
+                                    aux = { ...aux, num: reaction.num + 1 }
+                                } 
                             }
 
                             return aux;

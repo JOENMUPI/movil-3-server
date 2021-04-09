@@ -61,19 +61,17 @@ const getCommentByPostId = async (req, res) => {
         if(data) { 
             const allReactions = await pool.query(dbQueriesReaction.getAllReactions);
             let allReactionsAux  = [];
-            let commentariesAux = [];
 
             if (allReactions) {
                 allReactions.rows.forEach(reaction => {
                     allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide , num: 0, me: false });
                 });
             } 
-                //te falta las reacciones... aqui quedastes
-            for(let i = 0; i < data.rowCount; i ++) {
-                const arrAux = [ dataPost.rows[i].post_ide ];
+                
+            for(let i = 0; i < data.rowCount; i ++) { 
+                const arrAux = [ data.rows[i].commentary_ide ];
                 const reactionComment = await pool.query(dbQueriesCommentaryReaction.getReactionsByCommentaryId, arrAux);
-                const responsesNum = await pool.query(dbQueriesCommentary.getNumResponsesByCommentId, [ data.rows[i].commentary_ide ]);
-                let commentary = dataToComment(data.rows[i], 0, []);
+                const responsesNum = await pool.query(dbQueriesCommentary.getNumResponsesByCommentId, [ data.rows[i].commentary_ide ]);  
                 let reactions = allReactionsAux;
 
                 if(reactionComment) {
@@ -92,7 +90,7 @@ const getCommentByPostId = async (req, res) => {
                     });
                 }
 
-                commentariesAux.push(dataToComment(data.rows[i], comentaries.rows[0].count, reactions)); 
+                let commentary = dataToComment(data.rows[i], 0, reactions);
                 
                 if(responsesNum) {
                     commentary.responses = responsesNum.rows[0].count;
@@ -101,7 +99,6 @@ const getCommentByPostId = async (req, res) => {
                 commentaries.push(commentary);
             }
              
-            
             res.json(newReponse('Commentaries', 'Success', commentaries))
         
         } else {
