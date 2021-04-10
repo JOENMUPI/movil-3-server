@@ -31,6 +31,7 @@ app.use(require('./routes/country'));
 app.use(require('./routes/post'));
 app.use(require('./routes/comment'));
 app.use(require('./routes/reaction'));
+app.use(require('./routes/connect'));
 
 
 // Server Listen

@@ -140,6 +140,7 @@ CREATE SEQUENCE public.university_university_ide_seq;
     CREATE TABLE public.connect (
                     user_ide INTEGER NOT NULL,
                     user_user_ide INTEGER NOT NULL,
+	            connect_pet_flg BOOLEAN NOT NULL,
                     CONSTRAINT connect_pk PRIMARY KEY (user_ide, user_user_ide)
     );
     

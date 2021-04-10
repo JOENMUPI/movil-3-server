@@ -10,6 +10,7 @@ const dbQueriesPost = require('../config/queries/post');
 const dbQueriesReaction = require('../config/queries/reaction');
 const dbQueriesPostReaction = require('../config/queries/post_reaction');
 const dbQueriesComment = require('../config/queries/comment');
+const dbQueriesConnect = require('../config/queries/connect');
 const passwordUtil = require('../utilities/password');
 const field = require('../utilities/field');
 const jwt = require('jsonwebtoken');
@@ -279,8 +280,22 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
             const dataPost = await pool.query(dbQueriesPost.getPostByUserIdOnUser, [ dataUser.id ]);
             let dataQualification = await pool.query(dbQueriesQualifications.getQualificationByUserId, [ dataUser.id ]); 
             let dataIdioms = await pool.query(dbQueriesIdiom.getIdiomsByUserId, [ dataUser.id ]);
+            let dataMyConnect = await pool.query(dbQueriesConnect.checkMyconnect, [ dataUser.id, tokenDecoded.id ]);
+            let dataConnectNum = await pool.query(dbQueriesConnect.getNumConnectsByUserId, [ dataUser.id ]);
+            
+            
             let postsAux = [];
 
+            if(dataConnectNum) {
+                (dataConnectNum.rowCount > 0) 
+                ? dataConnectNum = dataConnectNum.rows[0].count
+                : dataConnectNum = 0;
+            }
+
+            (dataMyConnect.rowCount > 0)
+            ? dataMyConnect = true
+            : dataMyConnect = false;
+            
             (dataQualification)
             ? dataQualification = dataToQualifications(dataQualification.rows) 
             : dataQualification = [];
@@ -312,7 +327,7 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
                                 if(reaction.id == item.reaction_ide) { 
                                     (item.user_ide == tokenDecoded.id)  
                                     ? aux = { ...aux, num: reaction.num + 1, me: true }
-                                    : aux = { ...aux, num: reaction.num + 1, me: false }
+                                    : aux = { ...aux, num: reaction.num + 1 }
                                 }
     
                                 return aux;
@@ -323,9 +338,12 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
                     postsAux.push(dataToPost(dataPost.rows[i], reactions, comentaries.rows[0].count)); 
                 }
             }
-
+                console.log('myConnect', dataMyConnect);
+                console.log('connectNum', dataConnectNum);
             const user = { 
                 ...dataUser, 
+                connectNum: dataConnectNum,
+                myConnect: dataMyConnect,
                 activities: postsAux,
                 qualifications: dataQualification,  
                 idioms: dataIdioms,
