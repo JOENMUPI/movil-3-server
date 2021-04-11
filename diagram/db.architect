@@ -645,7 +645,7 @@
    <relationship id="REL204" populated="true" UUID="ccbac205-2f66-469f-b3d0-54e1ca2bed42" deferrability="7" deleteRule="3" fk-table-ref="TAB148" fkCardinality="7" identifying="true" name="enterprise_enterprise_country_fk" physicalName="enterprise_enterprise_country_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP205" populated="true" UUID="db681d61-4509-406f-b811-bd98d6cc4c14" fk-column-ref="COL150" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL59" />
    </relationship>
-   <relationship id="REL206" populated="true" UUID="b3a63041-99cc-4c0e-b54f-9a8fcd64ccbd" deferrability="7" deleteRule="3" fk-table-ref="TAB138" fkCardinality="7" identifying="false" name="enterprise_ experience_fk" physicalName="enterprise_ experience_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
+   <relationship id="REL206" populated="true" UUID="b3a63041-99cc-4c0e-b54f-9a8fcd64ccbd" deferrability="7" deleteRule="3" fk-table-ref="TAB138" fkCardinality="7" identifying="false" name="enterprise_ experience_fk" physicalName="enterprise__experience_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP207" populated="true" UUID="819da03c-c87b-4cd4-ade1-42f81f4291b8" fk-column-ref="COL140" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL59" />
    </relationship>
    <relationship id="REL208" populated="true" UUID="775c911a-f7b0-492b-a0d0-6333ae9fa8ef" deferrability="7" deleteRule="3" fk-table-ref="TAB113" fkCardinality="7" identifying="true" name="language_user_language_fk" physicalName="language_user_language_fk" pk-table-ref="TAB65" pkCardinality="2" updateRule="3" >
@@ -681,7 +681,7 @@
    </relationship>
   </relationships>
  </target-database>
- <ddl-generator type="ca.sqlpower.architect.ddl.PostgresDDLGenerator" allow-connection="true" target-schema="public"> </ddl-generator>
+ <ddl-generator type="ca.sqlpower.architect.ddl.PostgresDDLGenerator" allow-connection="false" target-schema="public"> </ddl-generator>
  <liquibase-settings useSeparateChangeSets="false" generateId="false" idStart="1"/>
  <create-kettle-job-settings filePath="" jobName="" schemaName="" kettleJoinType="0" savingToFile="true" />
  <play-pen zoom="0.8408964152537141" viewportX="0" viewportY="0" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
