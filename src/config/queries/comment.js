@@ -7,7 +7,7 @@ module.exports = {
     
     // Select
     getCommentByPostId: `SELECT c.*, u.* FROM ${ table } AS c
-    JOIN user_1 AS u ON u.user_ide = c.user_ide WHERE c.post_ide = $1`,
+    JOIN user_1 AS u ON u.user_ide = c.user_ide WHERE c.post_ide = $1 ORDER BY c.commentary_ide DESC`,
     getNumCommentByPostId: `SELECT COUNT(*) FROM ${ table } WHERE post_ide = $1`,
     getNumResponsesByCommentId: `SELECT COUNT(*) FROM ${ table } WHERE Parent_commentary_ide = $1`, 
     

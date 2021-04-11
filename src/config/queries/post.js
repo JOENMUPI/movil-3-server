@@ -8,10 +8,10 @@ module.exports = {
 
     // Select
     getPosts: `SELECT p.*, u.* FROM ${ table } AS p 
-    JOIN user_1 AS u ON u.user_ide = p.user_ide`,
+    JOIN user_1 AS u ON u.user_ide = p.user_ide ORDER BY p.post_ide DESC`,
     getPostByUserId: `SELECT p.*, u.* FROM ${ table } AS p 
     JOIN user_1 AS u ON u.user_ide = p.user_ide WHERE p.user_ide = $1`,
-    getPostByUserIdOnUser: `SELECT * FROM ${ table } WHERE user_ide = $1`,
+    getPostByUserIdOnUser: `SELECT * FROM ${ table } WHERE user_ide = $1 ORDER BY post_ide DESC`,
 
     
     // Update

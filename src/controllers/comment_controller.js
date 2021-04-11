@@ -44,6 +44,19 @@ const dataToComment = (element, responses, reactions) => {
     return comment;
 }
 
+const getAllReactions = async () => {
+    const allReactions = await pool.query(dbQueriesReaction.getAllReactions);
+    let allReactionsAux  = [];
+
+    if (allReactions) {
+        allReactions.rows.forEach(reaction => {
+            allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide , num: 0, me: false });
+        });
+    } 
+
+    return allReactionsAux;
+}
+
 
 // Logic
 const getCommentByPostId = async (req, res) => { 
@@ -59,20 +72,13 @@ const getCommentByPostId = async (req, res) => {
         let commentaries = [];
 
         if(data) { 
-            const allReactions = await pool.query(dbQueriesReaction.getAllReactions);
-            let allReactionsAux  = [];
-
-            if (allReactions) {
-                allReactions.rows.forEach(reaction => {
-                    allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide , num: 0, me: false });
-                });
-            } 
+            const allReactions = await getAllReactions();
                 
             for(let i = 0; i < data.rowCount; i ++) { 
                 const arrAux = [ data.rows[i].commentary_ide ];
                 const reactionComment = await pool.query(dbQueriesCommentaryReaction.getReactionsByCommentaryId, arrAux);
                 const responsesNum = await pool.query(dbQueriesCommentary.getNumResponsesByCommentId, [ data.rows[i].commentary_ide ]);  
-                let reactions = allReactionsAux;
+                let reactions = allReactions;
 
                 if(reactionComment) {
                     reactionComment.rows.forEach(item => {
@@ -118,9 +124,10 @@ const createComment = async (req, res) => {
         const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
         const arrAux = [ new Date(), text, parentId, postId, tokenDecoded.id ];
         const data = await pool.query(dbQueriesCommentary.createComment, arrAux);
+        const allReactions = await getAllReactions();
         
         (data)
-        ? res.json(newReponse('Comment created', 'Success', dataToComment(data.rows[0], 0, [])))
+        ? res.json(newReponse('Comment created', 'Success', dataToComment(data.rows[0], 0, allReactions)))
         : res.json(newReponse('Error create comment', 'Error', { }));
     }
 }

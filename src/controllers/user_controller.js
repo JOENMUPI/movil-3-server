@@ -338,8 +338,7 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
                     postsAux.push(dataToPost(dataPost.rows[i], reactions, comentaries.rows[0].count)); 
                 }
             }
-                console.log('myConnect', dataMyConnect);
-                console.log('connectNum', dataConnectNum);
+                
             const user = { 
                 ...dataUser, 
                 connectNum: dataConnectNum,
