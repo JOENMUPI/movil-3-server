@@ -2,7 +2,7 @@ const bcryt = require('bcryptjs');
 
 
 // Logic
-const checkPass = (pass, confirmPass) => {
+const checkPass = (pass) => {
     if(pass.length >= 8) {		
         let capitalLetter = false;
         let lowercaseLetter = false;
@@ -25,7 +25,7 @@ const checkPass = (pass, confirmPass) => {
 
         }
         
-        if(capitalLetter && lowercaseLetter && specialLetter && number && confirmPass == pass) {
+        if(capitalLetter && lowercaseLetter && specialLetter && number) {
             return true;
         
         } else {

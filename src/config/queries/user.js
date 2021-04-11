@@ -16,7 +16,11 @@ module.exports = {
 
 
     // Update
-    updateUserById: `UPDATE ${ table } SET user_nam = $1, user_ema = $2, WHERE user_ide = $3`,
+    updateUserWithCountryById: `UPDATE ${ table } SET user_nam = $1, user_las_nam = $2, user_ema = $3, 
+    user_des = $4, user_img = $5, country_ide = $7
+    WHERE user_ide = $6 RETURNING *`,
+    updateUserWithoutCountryById: `UPDATE ${ table } SET user_nam = $1, user_las_nam = $2, user_ema = $3, user_des = $4, user_img = $5
+    WHERE user_ide = $6 RETURNING *`,
     updatePassById: `UPDATE ${ table } SET user_pas = $1 WHERE user_ide = $2`,
     updateSkillById: `UPDATE ${ table } SET user_ski_jso = $1 WHERE user_ide = $2`,
     updateInterestById: `UPDATE ${ table } SET user_int_jso = $1 WHERE user_ide = $2`,

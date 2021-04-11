@@ -403,89 +403,120 @@ const updateFieldById = async (req, res) => {
 }
 
 const updateUserById = (req, res) => {
-    const { name, email } = req.body;
-    const { userId } = req.params;
+    const token = req.headers['x-access-token'];
+    const { name, email, lastName, img, description, country, newCountry } = req.body;
     const errors = [];
 
-    if(!field.checkFields([ name, email ])) {
-        errors.push({ text: 'Please fill in all the spaces' });
-    } 
-    
-    if(errors.length > 0) {
-        res.json(newReponse('Errors detected', 'Fail', { errors }));
-    
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+
     } else {
-        checkAux(email, 'email', async (err, users) => {
-            if(err) {
-                res.json(newReponse(err, 'Error', { }));
-            
-            } else if(!users) {
-                res.json(newReponse('User not found', 'Error', { }));
+        if(!field.checkFields([ name, email, lastName, country ])) {
+            errors.push({ text: 'Please fill in all the spaces' });
+        } 
+        
+        if(errors.length > 0) {
+            res.json(newReponse('Errors detected', 'Fail', { errors }));
+        
+        } else {
+            checkAux(email, 'email', async (err, users) => {
+                if(err) {
+                    res.json(newReponse(err, 'Error', { }));
                 
-            } else {
-                if(users[0].id != userId) {
-                    res.json(newReponse(`Email ${ email } already use`, 'Error', { }));
+                } else if(!users) {
+                    res.json(newReponse('User not found', 'Error', { }));
                     
-                } else {   
-                    const data = await pool.query(dbQueriesUser.updateUserById, [ name, email, userId ]);
-                
-                    (data)
-                    ? res.json(newReponse('User updated', 'Success', { }))
-                    : res.json(newReponse('Error on update', 'Error', { }));
-                }
-            }        
-        });       
+                } else {
+                    const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET);
+
+                    if(users[0].id != tokenDecoded.id) {
+                        res.json(newReponse(`Email ${ email } already use`, 'Error', { }));
+                        
+                    } else {   
+                        let arrAux = [ name, lastName, email, description, img, tokenDecoded.id ];
+                        let data; 
+
+                        if(tokenDecoded.country != country) {
+                            arrAux.push(newCountry.id);   
+                            data = await pool.query(dbQueriesUser.updateUserWithCountryById, arrAux);
+                        } else {
+                            data = await pool.query(dbQueriesUser.updateUserWithoutCountryById, arrAux);
+                        }
+
+                        if(data) {
+                            let { img, interests, skills, awards, ...user } = dataToUser(data.rows)[0]; 
+                            
+                            (tokenDecoded.country != country)
+                            ? user = { ...user, country: newCountry.tittle  }
+                            : user = { ...user, country: country }
+                            
+                            const token = jwt.sign(user, process.env.SECRET, { expiresIn: '12h' }); 
+                            
+                            res.json(newReponse('User updated', 'Success', token));
+                       
+                        } else {
+                            res.json(newReponse('Error on update', 'Error', { }));
+                        }
+                    }
+                }        
+            });       
+        }
     }
 }
 
 
 const updatePassById = async (req, res) => { 
-    const { password, confirmPassword, oldPassword } = req.body;
-    const { userId } = req.params;
+    const token = req.headers['x-access-token'];
+    const { newPassword, oldPassword } = req.body; 
     const errors = [];
-    
-    if(!field.checkFields([ password, confirmPassword, oldPassword, userId ])) { 
-        errors.push({ text: 'Please fill in all the spaces' });
-    } 
-    
-    if(!passwordUtil.checkPass(password, confirmPassword)) { 
-        errors.push({ text: 'passwords must be uppercase, lowercase, special characters, have more than 8 digits and match each other'});
-    
-    } 
-    
-    if(errors.length > 0) {
-        res.json(newReponse('Errors detected', 'Fail', { errors }));
-    
+
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+
     } else {
-        const user = await pool.query(dbQueriesUser.getUserById, [ userId ]);
-
-        if(user) {
-            if(user.rowCount <= 0) {
-                res.json(newReponse('User not found', 'Error', { })); 
-            
-            } else {
-                if(await bcryt.compare(oldPassword, user.rows[0].user_pas)) {
-                    passwordUtil.encryptPass(password, async (err, hash) => { 
-                        if(err) { 
-                            res.json(newReponse(err, 'Error', { }));
-             
-                        } else {
-                            const data = await pool.query(dbQueriesUser.updatePassById, [ hash, userId ]);
-                            
-                            (data) 
-                            ? res.json(newReponse('Pass updated', 'Success', { }))
-                            : res.json(newReponse('Error on update', 'Error', { }));
-                        }
-                    });
-
-                } else {
-                    res.json(newReponse('Old password no match', 'Error', { }));
-                }
-            }
-
+        if(!field.checkFields([ newPassword, oldPassword ])) { 
+            errors.push({ text: 'Please fill in all the spaces' });
+        } 
+        
+        if(!passwordUtil.checkPass(newPassword)) { 
+            errors.push({ text: 'passwords must be uppercase, lowercase, special characters, have more than 8 digits and match each other'});
+        } 
+        
+        if(errors.length > 0) {
+            res.json(newReponse('Errors detected', 'Fail', { errors }));
+        
         } else {
-            res.json(newReponse('Error searshing user', 'Error', { }))
-        }        
+            const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
+            const user = await pool.query(dbQueriesUser.getUserById, [ tokenDecoded.id ]);
+    
+            if(user) {
+                if(user.rowCount <= 0) {
+                    res.json(newReponse('User not found', 'Error', { })); 
+                
+                } else {
+                    if(await bcryt.compare(oldPassword, user.rows[0].user_pas)) {
+                        passwordUtil.encryptPass(newPassword, async (err, hash) => { 
+                            if(err) { 
+                                res.json(newReponse(err, 'Error', { }));
+                 
+                            } else {
+                                const data = await pool.query(dbQueriesUser.updatePassById, [ hash, tokenDecoded.id ]);
+                                
+                                (data) 
+                                ? res.json(newReponse('Pass updated', 'Success', { }))
+                                : res.json(newReponse('Error on update', 'Error', { }));
+                            }
+                        });
+    
+                    } else {
+                        res.json(newReponse('Old password no match', 'Error', { }));
+                    }
+                }
+    
+            } else {
+                res.json(newReponse('Error searshing user', 'Error', { }))
+            }        
+        } 
     }
 }
 
