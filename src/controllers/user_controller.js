@@ -95,13 +95,6 @@ const dataToLanguage = (rows) => {
     return idioms;
 }
 
-const dataToReactions = (reaction) => {
-    return {
-        type: reaction.reaction_des,
-        num: reaction.count
-    }
-}
-
 const dataToPost = (post, reactions, commentaries) => { 
     let jsonAux = {
         tittle: post.post_tit,
@@ -390,8 +383,13 @@ const updateFieldById = async (req, res) => {
             case 'skill':
                 data = await pool.query(dbQueriesUser.updateSkillById, [ req.body, tokenDecoded.id ]);
                 break;
+            
             case 'interest':
                 data = await pool.query(dbQueriesUser.updateInterestById, [ req.body, tokenDecoded.id ]);
+                break;
+
+            case 'award':
+                data = await pool.query(dbQueriesUser.updateAwardById, [ req.body, tokenDecoded.id ]);
                 break;
         }
 

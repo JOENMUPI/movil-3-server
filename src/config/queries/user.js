@@ -24,6 +24,7 @@ module.exports = {
     updatePassById: `UPDATE ${ table } SET user_pas = $1 WHERE user_ide = $2`,
     updateSkillById: `UPDATE ${ table } SET user_ski_jso = $1 WHERE user_ide = $2`,
     updateInterestById: `UPDATE ${ table } SET user_int_jso = $1 WHERE user_ide = $2`,
+    updateAwardById: `UPDATE ${ table } SET user_awa_jso = $1 WHERE user_ide = $2`,
 
 
     // Delete
