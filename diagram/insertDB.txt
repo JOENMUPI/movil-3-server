@@ -16,14 +16,23 @@ insert into country (country_nam, country_num_cod) values ('Panama', '+507');
 insert into country (country_nam, country_num_cod) values ('Puerto Rico', '+509');
 insert into country (country_nam, country_num_cod) values ('Costa Rica', '+506');
 
-insert into university (university_nam) values ('Universidad de los Andes'); 
-insert into university (university_nam) values ('Universidad Rafael Urdaneta'); 
-insert into university (university_nam) values ('Universidad Central de Venezuela'); 
-insert into university (university_nam) values ('Universidad Simon Bolivar'); 
-insert into university (university_nam) values ('Universidad del Zulia'); 
-insert into university (university_nam) values ('Universidad Rafael Bellosos Chacin');
-insert into university (university_nam) values ('Universidad del Zulia'); 
-insert into university (university_nam) values ('Universidad Catolica Andres Bello'); 
+insert into university (university_nam, university_des) values ('Universidad de los Andes', 'Description...'); 
+insert into university (university_nam, university_des) values ('Universidad Rafael Urdaneta', 'Description...'); 
+insert into university (university_nam, university_des) values ('Universidad Central de Venezuela', 'Description...'); 
+insert into university (university_nam, university_des) values ('Universidad Simon Bolivar', 'Description...'); 
+insert into university (university_nam, university_des) values ('Universidad del Zulia', 'Description...'); 
+insert into university (university_nam, university_des) values ('Universidad Rafael Bellosos Chacin', 'Description...');
+insert into university (university_nam, university_des) values ('Universidad del Zulia', 'Description...'); 
+insert into university (university_nam, university_des) values ('Universidad Catolica Andres Bello', 'Description...'); 
+
+insert into university_country (university_ide, country_ide) values (1, 1); 
+insert into university_country (university_ide, country_ide) values (2, 1); 
+insert into university_country (university_ide, country_ide) values (3, 1); 
+insert into university_country (university_ide, country_ide) values (4, 1); 
+insert into university_country (university_ide, country_ide) values (5, 1); 
+insert into university_country (university_ide, country_ide) values (6, 1); 
+insert into university_country (university_ide, country_ide) values (7, 1); 
+insert into university_country (university_ide, country_ide) values (8, 1); 
 
 insert into language (language_des) values ('German');
 insert into language (language_des) values ('French');
@@ -70,6 +79,13 @@ insert into reaction (reaction_des) values ('skull-outline');
 insert into reaction (reaction_des) values ('trophy-outline');
 insert into reaction (reaction_des) values ('thumbs-up-outline');
 insert into reaction (reaction_des) values ('thumbs-down-outline');
+
+insert into language_level (language_level_des) values ('Native');
+insert into language_level (language_level_des) values ('Basic');
+insert into language_level (language_level_des) values ('Hight');
+insert into language_level (language_level_des) values ('Professional');
+
+
 
 
 
