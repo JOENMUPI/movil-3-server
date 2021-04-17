@@ -12,11 +12,13 @@ router.get(endPoint, language.getLanguages);
 // Post
 router.post(endPoint, language.createLanguage);
 
+
 // Put
+router.put(endPoint, language.updateLanguageById);
 
 
 // Delete
-
+router.delete(`${ endPoint }/:languageId`, language.deleteLanguageById);
 
 // Export
 module.exports = router;

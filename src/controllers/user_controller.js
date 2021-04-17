@@ -87,8 +87,10 @@ const dataToLanguage = (rows) => {
 
     rows.forEach(element => {
         idioms.push({  
-            lvl: element.user_language_lvl,
-            name: element.language_nam
+            lvl: element.language_level_des,
+            name: element.language_des,
+            id: element.language_ide,
+            lvlId: element.language_level_ide
         });
     });
 

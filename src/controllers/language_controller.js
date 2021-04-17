@@ -79,49 +79,43 @@ const createLanguage = async (req, res) => {
         const data = await pool.query(dbQueriesUserLanguage.createIdiom, arrAux);
         
         (data)
-        ? res.json(newReponse('Post-reaction created', 'Success', { }))
-        : res.json(newReponse('Error create post', 'Error', { }));
+        ? res.json(newReponse('Idiom created', 'Success', { }))
+        : res.json(newReponse('Error create idiom', 'Error', { }));
     }
 }
 
+const updateLanguageById = async (req, res) => {
+    const token = req.headers['x-access-token'];
+    const { languageId, levelId } = req.body;
+    
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
 
-
-
-
-
+    } else {
+        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
+        const arrAux = [ languageId, levelId, tokenDecoded.id ];
+        const data = await pool.query(dbQueriesUserLanguage.updateIdiomById, arrAux);
+        
+        (data)
+        ? res.json(newReponse('Idiom updated', 'Success', { }))
+        : res.json(newReponse('Error update idiom', 'Error', { }));
+    }
+}
  
-const deletePostReactionById = async (req, res) => {
+const deleteLanguageById = async (req, res) => {
     const token = req.headers['x-access-token'];
-    const { postId, reactionId } = req.params;
+    const { languageId } = req.params;
 
     if(!token) {
         res.json(newReponse('User dont have a token', 'Error', { }));
     
     } else {
         const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
-        const arrAux = [ postId, reactionId, tokenDecoded.id ];
-        const data = await pool.query(dbQueriesPostReaction.deletePostReactionById, arrAux);
+        const arrAux = [ languageId, tokenDecoded.id ];
+        const data = await pool.query(dbQueriesUserLanguage.deleteIdiomById, arrAux);
 
         (data)
-        ? res.json(newReponse('Detele post-reaction successfully', 'Success', { }))
-        : res.json(newReponse('Error on delete with id', 'Error', { }));
-    }
-}
-
-const deleteCommentReactionById = async (req, res) => {
-    const token = req.headers['x-access-token'];
-    const { commentId, reactionId } = req.params;
-
-    if(!token) {
-        res.json(newReponse('User dont have a token', 'Error', { }));
-    
-    } else {
-        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
-        const arrAux = [ commentId, reactionId, tokenDecoded.id ];
-        const data = await pool.query(dbQueriesCommentReaction.deleteCommentaryReactionById, arrAux);
-
-        (data)
-        ? res.json(newReponse('Detele comment-reaction successfully', 'Success', { }))
+        ? res.json(newReponse('Detele user-language successfully', 'Success', { }))
         : res.json(newReponse('Error on delete with id', 'Error', { }));
     }
 }
@@ -130,4 +124,6 @@ const deleteCommentReactionById = async (req, res) => {
 module.exports = { 
     getLanguages,
     createLanguage,
+    updateLanguageById,
+    deleteLanguageById
 }
