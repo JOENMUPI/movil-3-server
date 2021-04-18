@@ -70,13 +70,27 @@ const dataToQualifications = (rows) => {
     const qualifications = [];
     
     rows.forEach(element => {
-        qualifications.push({  
+        let aux = {  
             dateEnd: element.user_qualification_dat_end,
             dateInit: element.user_qualification_dat_cre,
             img: element.university_img,
-            university: element.university_nam,
-            qualification: qualification_nam,
-        });
+            universityName: element.university_nam,
+            qualificationName: element.qualification_nam,
+            universityId: element.university_ide,
+            qualificationId: element.qualification_ide,
+            universityDescription: element.university_des,
+            averageScore: element.user_qualification_not
+        }
+
+        if(aux.img != null) {
+            aux.img = aux.img.toString();
+        }
+
+        if(aux.averageScore != null) {
+            aux.averageScore = aux.averageScore.toString();    
+        }
+
+        qualifications.push(aux); 
     });
 
     return qualifications;

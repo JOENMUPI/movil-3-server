@@ -39,7 +39,7 @@ const dataToQualifications = (rows) => {
         
     rows.forEach(element => {
         qualifications.push({
-            description: element.qualification_des,
+            tittle: element.qualification_nam,
             id: element.qualification_ide
         });
     });
@@ -83,7 +83,7 @@ const getQualificationByUniversity = async (req, res) => {
         
         if(data) { 
             (data.rowCount > 0)
-            ? res.json(newReponse('All qualifications', 'Success', dataToUniversities(data.rows)))
+            ? res.json(newReponse('All qualifications', 'Success', dataToQualifications(data.rows)))
             : res.json(newReponse('Qualifications not found', 'Success', []));
         
         } else {
