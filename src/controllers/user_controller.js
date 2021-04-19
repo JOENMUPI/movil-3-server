@@ -270,6 +270,27 @@ const getUser = async (req, res) => {
     }
 }
 
+const getUserByNumber = async (req, res) => { 
+    const token = req.headers['x-access-token'];
+    const { number } = req.params;
+    
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+
+    } else {
+        const data = await pool.query(dbQueriesUser.getUserByNumber, [ number ]);
+
+        if (data) {
+            (data.rowCount > 0)
+            ? res.json(newReponse('User found', 'Success', dataToUser(data.rows)))
+            : res.json(newReponse('Error searhing the user', 'Success'));
+        
+        } else { 
+            res.json(newReponse('...', 'Error', { }));
+        }
+    }
+}
+
 const getUserById = async (req, res) => {  /////// falta getear las experiencias
     const token = req.headers['x-access-token'];
     const { userId } = req.params; 
@@ -541,6 +562,7 @@ module.exports = {
     checkCode,
     login,
     getUser, 
+    getUserByNumber,
     createUsers, 
     getUserById,
     updateUserById,

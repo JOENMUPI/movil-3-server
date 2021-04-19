@@ -14,9 +14,11 @@ router.post(`${endPoint}/user`, qualification.createQualification);
 
 
 // Put
+router.put(`${endPoint}/user`, qualification.updateQualificationById);
 
 
 // Delete
+router.delete(`${endPoint}/user/:qualificationId/:universityId`, qualification.deleteQualificationById);
 
 
 // Export

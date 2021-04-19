@@ -51,6 +51,19 @@ const dataToPost = (element, reactions, comentaries) => {
     return postAux;
 }
 
+const getAllReactions = async () => {
+    const allReactions = await pool.query(dbQueriesReaction.getAllReactions);
+    let allReactionsAux  = [];
+
+    if (allReactions) {
+        allReactions.rows.forEach(reaction => {
+            allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide , num: 0, me: false });
+        });
+    } 
+
+    return allReactionsAux;
+}
+
 
 // Logic
 const getPostForHome = async (req, res) => {
@@ -67,20 +80,13 @@ const getPostForHome = async (req, res) => {
             res.json(newReponse('Error searching post', 'Error', {})); 
 
         } else { 
-            const allReactions = await pool.query(dbQueriesReaction.getAllReactions);
-            let allReactionsAux  = [];
+            const allReactions = await getAllReactions();
             let postsAux = [];
-
-            if (allReactions) {
-                allReactions.rows.forEach(reaction => {
-                    allReactionsAux.push({ description: reaction.reaction_des, id: reaction.reaction_ide , num: 0, me: false });
-                });
-            } 
 
             for(let i = 0; i < dataPost.rowCount; i++) { 
                 const reactionPost = await pool.query(dbQueriesPostReaction.getReactionsByPostId, [ dataPost.rows[i].post_ide ]);
                 const comentaries = await pool.query(dbQueriesComment.getNumCommentByPostId, [ dataPost.rows[i].post_ide ]);
-                let reactions = allReactionsAux;
+                let reactions = allReactions;
 
                 if(reactionPost) {
                     reactionPost.rows.forEach(item => {
@@ -120,9 +126,10 @@ const createPost = async (req, res) => {
         const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
         const arrAux = [ new Date(), tittle, description, commentFlag, connectFlag, img, tokenDecoded.id ];
         const data = await pool.query(dbQueriesPost.createPost, arrAux);
+        const allReactions = await getAllReactions();
         
         (data)
-        ? res.json(newReponse('Post created', 'Success', { }))
+        ? res.json(newReponse('Post created', 'Success', dataToPost(data.rows[0], allReactions, 0)))
         : res.json(newReponse('Error create post', 'Error', { }));
     }
 }

@@ -14,8 +14,10 @@ module.exports = {
     
     
     // Update
-    
+    updatetQualificationById: `UPDATE ${ table } SET qualification_ide = $1, university_ide = $2, user_qualification_not = $3, 
+    user_qualification_dat_cre = $4, user_qualification_dat_end = $5 
+    WHERE (user_ide = $6 AND qualification_ide = $7 AND university_ide = $8)`, 
 
     // Delete
-
+    deleteQualificationById: `DELETE FROM ${ table } WHERE (user_ide = $1 AND qualification_ide = $2 AND university_ide = $3)`
 };

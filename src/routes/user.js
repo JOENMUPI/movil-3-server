@@ -8,6 +8,8 @@ const endPoint = '/user';
 // Get
 router.get(endPoint, user.getUser);
 router.get(`${ endPoint }/:userId`, user.getUserById);
+router.get(`${ endPoint }/num/search/:number`, user.getUserByNumber);
+
 
 // Post
 router.post(`${ endPoint }/singup`, user.createUsers);
