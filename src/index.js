@@ -35,6 +35,7 @@ app.use(require('./routes/connect'));
 app.use(require('./routes/language'));
 app.use(require('./routes/university'));
 app.use(require('./routes/qualification'));
+app.use(require('./routes/enterprise'));
 //app.use(require('./routes/init'));
 
 

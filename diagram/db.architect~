@@ -611,7 +611,7 @@
     <column id="COL176" populated="true" UUID="ac90f88a-e1e2-4178-a5d1-0a18ecae7099" autoIncrement="true" autoIncrementSequenceName="language_level_language_level_ide_seq_1" defaultValue="" name="language_level_ide" nullable="0" physicalName="language_level_ide" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
      <remarks></remarks>
     </column>
-    <column id="COL177" populated="true" UUID="ef5f42d6-cfdd-4fcf-8fc3-19ebe65ab58f" autoIncrement="false" autoIncrementSequenceName="language_level_languaje_level_des_seq" defaultValue="" name="languaje_level_des" nullable="0" physicalName="languaje_level_des" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
+    <column id="COL177" populated="true" UUID="ef5f42d6-cfdd-4fcf-8fc3-19ebe65ab58f" autoIncrement="false" autoIncrementSequenceName="language_level_languaje_level_des_seq" defaultValue="" name="language_level_des" nullable="0" physicalName="language_level_des" precision="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="12" userDefinedTypeUUID="831ac2d4-0e65-47ec-a0b7-62b7f6b8760a" >
      <remarks></remarks>
     </column>
     </folder>
@@ -643,7 +643,7 @@
     <folder id="FOLTAB1802" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
     </folder>
     <folder id="FOLTAB1804" populated="true" name="Indices" physicalName="Indices" type="4">
-    <index id="IDX184" populated="true" UUID="18212440-0d4c-41f5-b7ac-275eab26c55d" clustered="false" name="job_pk" physicalName="type_job_pk" primaryKeyIndex="true" unique="false" >
+    <index id="IDX184" populated="true" UUID="18212440-0d4c-41f5-b7ac-275eab26c55d" clustered="false" name="job_pk" physicalName="job_pk" primaryKeyIndex="true" unique="false" >
      <index-column id="IDC185" populated="true" UUID="1d2a4a41-d480-4c99-8e98-0960b2add26c" ascendingOrDescending="UNSPECIFIED" column-ref="COL181" name="job_ide" physicalName="job_ide" />
      <index-column id="IDC186" populated="true" UUID="fbfb2a50-48e3-4eef-81cf-de8678ce3075" ascendingOrDescending="UNSPECIFIED" column-ref="COL182" name="enterprise_ide" physicalName="enterprise_ide" />
     </index>
@@ -712,13 +712,13 @@
     </index>
    </folder>
   </table>
-  <table id="TAB206" populated="true" UUID="857b5aa9-a1ee-446c-b298-0d81fbe62fe4" name="admin" objectType="TABLE" physicalName="admin" >
+  <table id="TAB206" populated="true" UUID="857b5aa9-a1ee-446c-b298-0d81fbe62fe4" name="user_enterprise" objectType="TABLE" physicalName="user_enterprise" >
    <remarks></remarks>
    <folder id="FOLTAB2061" populated="true" name="Columns" physicalName="Columns" type="1">
-    <column id="COL207" populated="true" UUID="6f0aa4e5-236a-4372-afed-4ad0b169dea1" autoIncrement="false" autoIncrementSequenceName="user_1_user_ide_seq" defaultValue="" name="user_ide" nullable="0" physicalName="user_ide" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+    <column id="COL207" populated="true" UUID="6f0aa4e5-236a-4372-afed-4ad0b169dea1" autoIncrement="false" autoIncrementSequenceName="user_enterprise_user_ide_seq" defaultValue="" name="user_ide" nullable="0" physicalName="user_ide" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
      <remarks></remarks>
     </column>
-    <column id="COL208" populated="true" UUID="bddb3aa7-9b60-4456-a774-bd3b27884d82" autoIncrement="false" autoIncrementSequenceName="enterprise_enterprise_ide_seq" defaultValue="" name="enterprise_ide" nullable="0" physicalName="enterprise_ide" precision="0" primaryKeySeq="1" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
+    <column id="COL208" populated="true" UUID="bddb3aa7-9b60-4456-a774-bd3b27884d82" autoIncrement="false" autoIncrementSequenceName="user_enterprise_enterprise_ide_seq" defaultValue="" name="enterprise_ide" nullable="0" physicalName="enterprise_ide" precision="0" primaryKeySeq="1" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="4" userDefinedTypeUUID="63b011c7-c81f-4c75-8271-632b3c87f727" >
      <remarks></remarks>
     </column>
     </folder>
@@ -727,7 +727,7 @@
     <folder id="FOLTAB2062" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
     </folder>
     <folder id="FOLTAB2064" populated="true" name="Indices" physicalName="Indices" type="4">
-    <index id="IDX209" populated="true" UUID="9cc7eb49-81a4-4f94-be11-4d5adcd98226" clustered="false" name="admin_pk" physicalName="admin_pk" primaryKeyIndex="true" unique="false" >
+    <index id="IDX209" populated="true" UUID="9cc7eb49-81a4-4f94-be11-4d5adcd98226" clustered="false" name="user_enterprise_pk" physicalName="user_enterprise_pk" primaryKeyIndex="true" unique="false" >
      <index-column id="IDC210" populated="true" UUID="dae6a33e-3923-47c7-bc2d-66b9c954596f" ascendingOrDescending="UNSPECIFIED" column-ref="COL207" name="user_ide" physicalName="user_ide" />
      <index-column id="IDC211" populated="true" UUID="5c0c8480-5deb-4fe4-a754-733dfdcd71fa" ascendingOrDescending="UNSPECIFIED" column-ref="COL208" name="enterprise_ide" physicalName="enterprise_ide" />
     </index>
@@ -795,19 +795,19 @@
     <column-mapping id="CMP251" populated="true" UUID="7add58f1-2169-4774-9838-175847830ab7" fk-column-ref="COL94" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL47" />
    </relationship>
    <relationship id="REL252" populated="true" UUID="6a3784e9-c37e-4719-ab80-0890406e086d" deferrability="7" deleteRule="0" fk-table-ref="TAB23" fkCardinality="7" identifying="false" name="post_comentary_fk" physicalName="post_comentary_fk" pk-table-ref="TAB46" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP253" populated="true" UUID="bab1e288-d7b8-4b64-915e-5f69e6c8b372" fk-column-ref="COL28" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL47" />
+    <column-mapping id="CMP253" populated="true" UUID="c6b5d741-06a9-4520-aa62-77147eda7dfb" fk-column-ref="COL28" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL47" />
    </relationship>
-   <relationship id="REL254" populated="true" UUID="ccbac205-2f66-469f-b3d0-54e1ca2bed42" deferrability="7" deleteRule="3" fk-table-ref="TAB153" fkCardinality="7" identifying="true" name="enterprise_enterprise_country_fk" physicalName="enterprise_enterprise_country_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP255" populated="true" UUID="db681d61-4509-406f-b811-bd98d6cc4c14" fk-column-ref="COL155" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL59" />
+   <relationship id="REL254" populated="true" UUID="ccbac205-2f66-469f-b3d0-54e1ca2bed42" deferrability="7" deleteRule="0" fk-table-ref="TAB153" fkCardinality="7" identifying="true" name="enterprise_enterprise_country_fk" physicalName="enterprise_enterprise_country_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP255" populated="true" UUID="24dc6d49-a238-4215-b26d-288f91f62b73" fk-column-ref="COL155" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL59" />
    </relationship>
-   <relationship id="REL256" populated="true" UUID="b3a63041-99cc-4c0e-b54f-9a8fcd64ccbd" deferrability="7" deleteRule="3" fk-table-ref="TAB143" fkCardinality="7" identifying="false" name="enterprise_ experience_fk" physicalName="enterprise_ experience_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
+   <relationship id="REL256" populated="true" UUID="b3a63041-99cc-4c0e-b54f-9a8fcd64ccbd" deferrability="7" deleteRule="3" fk-table-ref="TAB143" fkCardinality="7" identifying="false" name="enterprise_ experience_fk" physicalName="enterprise__experience_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP257" populated="true" UUID="819da03c-c87b-4cd4-ade1-42f81f4291b8" fk-column-ref="COL145" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL59" />
    </relationship>
-   <relationship id="REL258" populated="true" UUID="0b71f3a9-cff7-4354-8a05-ede55f00039a" deferrability="7" deleteRule="3" fk-table-ref="TAB180" fkCardinality="7" identifying="true" name="enterprise_type_job_fk" physicalName="enterprise_type_job_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP259" populated="true" UUID="c84d341c-77c3-4595-b8fa-eb44bb4cb6cb" fk-column-ref="COL182" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL59" />
+   <relationship id="REL258" populated="true" UUID="0b71f3a9-cff7-4354-8a05-ede55f00039a" deferrability="7" deleteRule="0" fk-table-ref="TAB180" fkCardinality="7" identifying="true" name="enterprise_type_job_fk" physicalName="enterprise_type_job_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP259" populated="true" UUID="d3762464-f126-4128-9cde-83197aed8744" fk-column-ref="COL182" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL59" />
    </relationship>
-   <relationship id="REL260" populated="true" UUID="d8ee4e5b-2887-4585-aea4-48c912f57b9c" deferrability="7" deleteRule="3" fk-table-ref="TAB206" fkCardinality="7" identifying="true" name="enterprise_admin_fk" physicalName="enterprise_admin_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP261" populated="true" UUID="f72c3e88-7572-4345-8648-c2f7b0e4e9e0" fk-column-ref="COL208" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL59" />
+   <relationship id="REL260" populated="true" UUID="d8ee4e5b-2887-4585-aea4-48c912f57b9c" deferrability="7" deleteRule="0" fk-table-ref="TAB206" fkCardinality="7" identifying="true" name="enterprise_admin_fk" physicalName="enterprise_admin_fk" pk-table-ref="TAB58" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP261" populated="true" UUID="e2aac84a-aefb-46af-a7bc-75b76163c4e6" fk-column-ref="COL208" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL59" />
    </relationship>
    <relationship id="REL262" populated="true" UUID="775c911a-f7b0-492b-a0d0-6333ae9fa8ef" deferrability="7" deleteRule="3" fk-table-ref="TAB117" fkCardinality="7" identifying="true" name="language_user_language_fk" physicalName="language_user_language_fk" pk-table-ref="TAB66" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP263" populated="true" UUID="09ab12cc-f392-420b-889f-6d46ac627567" fk-column-ref="COL118" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL67" />
@@ -849,16 +849,16 @@
    <relationship id="REL288" populated="true" UUID="fcfb12e2-3cee-49b6-8ab0-0c4cada9ec3b" deferrability="7" deleteRule="3" fk-table-ref="TAB117" fkCardinality="7" identifying="false" name="language_level_user_language_fk" physicalName="language_level_user_language_fk" pk-table-ref="TAB175" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP289" populated="true" UUID="0205c11b-b9ae-4a7a-bb38-8970175fb4ed" fk-column-ref="COL120" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL176" />
    </relationship>
-   <relationship id="REL290" populated="true" UUID="25c8c33d-4bc6-4b62-a620-6288b256df49" deferrability="7" deleteRule="3" fk-table-ref="TAB187" fkCardinality="7" identifying="false" name="type_job_job_offer_fk" physicalName="type_job_job_offer_fk" pk-table-ref="TAB180" pkCardinality="2" updateRule="3" >
-    <column-mapping id="CMP291" populated="true" UUID="b6f3ce05-c861-4370-bfdb-97cd8674f6e9" fk-column-ref="COL189" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL181" />
-    <column-mapping id="CMP292" populated="true" UUID="cf35c400-e8c4-41ff-a8c9-149ded7afe0d" fk-column-ref="COL190" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL182" />
+   <relationship id="REL290" populated="true" UUID="25c8c33d-4bc6-4b62-a620-6288b256df49" deferrability="7" deleteRule="0" fk-table-ref="TAB187" fkCardinality="7" identifying="false" name="type_job_job_offer_fk" physicalName="type_job_job_offer_fk" pk-table-ref="TAB180" pkCardinality="2" updateRule="3" >
+    <column-mapping id="CMP291" populated="true" UUID="47668c72-137b-48ce-bdf1-e97d9d6336e2" fk-column-ref="COL190" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL182" />
+    <column-mapping id="CMP292" populated="true" UUID="e9937a8d-d45e-41db-a15b-ad0f2448e449" fk-column-ref="COL189" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL181" />
    </relationship>
    <relationship id="REL293" populated="true" UUID="2c6461ae-5456-4c45-9832-0523b106360b" deferrability="7" deleteRule="3" fk-table-ref="TAB197" fkCardinality="7" identifying="true" name="job_offer_cv_job_offer_fk" physicalName="job_offer_cv_job_offer_fk" pk-table-ref="TAB187" pkCardinality="2" updateRule="3" >
     <column-mapping id="CMP294" populated="true" UUID="4110a7c3-776a-47a0-bf6d-6203cb9b6a6c" fk-column-ref="COL198" name="Column Mapping" physicalName="Column Mapping" pk-column-ref="COL188" />
    </relationship>
   </relationships>
  </target-database>
- <ddl-generator type="ca.sqlpower.architect.ddl.PostgresDDLGenerator" allow-connection="true" target-schema="public"> </ddl-generator>
+ <ddl-generator type="ca.sqlpower.architect.ddl.PostgresDDLGenerator" allow-connection="false" target-schema="public"> </ddl-generator>
  <liquibase-settings useSeparateChangeSets="false" generateId="false" idStart="1"/>
  <create-kettle-job-settings filePath="" jobName="" schemaName="" kettleJoinType="0" savingToFile="true" />
  <play-pen zoom="0.8408964152537141" viewportX="0" viewportY="82" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
