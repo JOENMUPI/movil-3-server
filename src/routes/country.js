@@ -10,13 +10,13 @@ router.get(endPoint, country.getCountries);
 
 
 // Post
-
+router.post(`${endPoint}/enterprise`, country.createCountryEnterprise);
 
 // Put
 
 
 // Delete
-
+router.delete(`${endPoint}/enterprise/:enterpriseId/:countryId`, country.deleteCountryEnterpriseById);
 
 // Export
 module.exports = router;

@@ -1,6 +1,7 @@
 const Pool = require('pg').Pool;
 const dbConfig = require('../config/db_config');
 const dbQueriesCountry = require('../config/queries/country');
+const dbQueriesCountryEnterprise = require('../config/queries/enterprise_country');
 
 
 // Variables
@@ -28,6 +29,22 @@ const dataToCountries = (rows) => {
 
 
 // Logic
+const createCountryEnterprise = async (req, res) => {
+    const token = req.headers['x-access-token'];
+    const { enterpriseId, countryId } = req.body;
+    
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+
+    } else {
+        const data = await pool.query(dbQueriesCountryEnterprise.createCountryEnterprise, [ enterpriseId, countryId]);
+        
+        (data)
+        ? res.json(newReponse('Country-company created', 'Success', { }))
+        : res.json(newReponse('Error create Enterprise', 'Error', { }));
+    }
+}
+
 const getCountries = async (req, res) => {
     const data = await pool.query(dbQueriesCountry.getAllCountries);
     
@@ -40,9 +57,27 @@ const getCountries = async (req, res) => {
         res.json(newReponse('Error searhing countries', 'Error', { }));
     }
 }
+
+const deleteCountryEnterpriseById = async (req, res) => {
+    const token = req.headers['x-access-token'];
+    const { enterpriseId, countryId } = req.params;
+
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+    
+    } else {
+        const data = await pool.query(dbQueriesCountryEnterprise.deleteCountryEnterpriseById, [ enterpriseId, countryId ]);
+
+        (data)
+        ? res.json(newReponse('Detele country-company successfully', 'Success', { }))
+        : res.json(newReponse('Error on delete with id', 'Error', { }));
+    }
+}
  
 
 // Export
 module.exports = { 
+    createCountryEnterprise,
     getCountries,
+    deleteCountryEnterpriseById
 }

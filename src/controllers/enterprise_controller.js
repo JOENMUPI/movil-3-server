@@ -1,6 +1,8 @@
 const Pool = require('pg').Pool;
 const dbConfig = require('../config/db_config');
 const dbQueriesEnterprise = require('../config/queries/enterprise');
+const dbQueriesCountryEnterprise = require('../config/queries/enterprise_country');
+const dbQueriesJob = require('../config/queries/job');
 const jwt = require('jsonwebtoken');
 
 
@@ -35,6 +37,33 @@ const dataToCompanies = (rows) => {
     return companies;
 }
 
+const dataToCountries = (rows) => {
+    const countries = [];
+        
+    rows.forEach(element => {
+        countries.push({  
+            id: element.country_ide,
+            tittle: element.country_nam,
+            code: element.country_num_cod
+        });
+    });
+
+    return countries;
+}
+
+const dataToJobs = (rows) => {
+    const jobs = [];
+        
+    rows.forEach(element => {
+        jobs.push({  
+            id: element.job_ide,
+            description: element.job_des
+        });
+    });
+
+    return jobs;
+}
+
 
 // Logic
 const getEnterprise = async (req, res) => {
@@ -66,15 +95,35 @@ const getEnterpriseById = async (req, res) => {
         res.json(newReponse('User dont have a token', 'Error', { }));
 
     } else {
-        const data = await pool.query(dbQueriesEnterprise.getEnterpriseById, [ enterpriseId ]);
+        let data = await pool.query(dbQueriesEnterprise.getEnterpriseById, [ enterpriseId ]);
 
-        if(data) { 
-            (data.rowCount > 0)
-            ? res.json(newReponse('Companies found', 'Success', dataToCompanies(data.rows)[0]))
-            : res.json(newReponse('Comapnies not found', 'Success', []));
+        (data.rowCount > 0)
+        ? data = dataToCompanies(data.rows)[0]
+        : res.json(newReponse('Company not found', 'Success', { }));
+
+        if(data) {
+            let countriesData = await pool.query(dbQueriesCountryEnterprise.getCountriesByEnterprise, [ enterpriseId ]);
+            let jobsData = await pool.query(dbQueriesJob.getJobsByEnterpriseId, [ enterpriseId ]);
+            
+            (jobsData)
+            ? jobsData = dataToJobs(jobsData.rows)
+            : jobsData = [];
+
+            (countriesData)
+            ? countriesData = dataToCountries(countriesData.rows)
+            : countriesData = [];
+            
+    
+            const response = {
+                ...data,
+                countries: countriesData,
+                jobs: jobsData
+            }
+
+            res.json(newReponse('Company found', 'Success', response));
         
         } else {
-            res.json(newReponse('Error searhing companies', 'Error', { }));
+            res.json(newReponse('Error searhing company', 'Error', { }));
         }
     }
 }
@@ -123,7 +172,7 @@ const deleteEnterpriseById = async (req, res) => {
         res.json(newReponse('User dont have a token', 'Error', { }));
     
     } else {
-        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); console.log(enterpriseId, tokenDecoded.id);
+        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
         const data = await pool.query(dbQueriesEnterprise.deleteEnterpriseById, [ enterpriseId, tokenDecoded.id ]);
 
         (data)

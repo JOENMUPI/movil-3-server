@@ -23,13 +23,21 @@ const createQualification = async (req, res) => {
         res.json(newReponse('User dont have a token', 'Error', { }));
 
     } else {
-        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
-        const arrAux = [ qualificationId, universityId, averageScore, dateInit, dateEnd, tokenDecoded.id ];
-        const data = await pool.query(dbQueriesUserQualification.createUserQualification, arrAux);
+        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET);
+        const arrAux = [ qualificationId, universityId, tokenDecoded.id ];
+        const check = await pool.query(dbQueriesUserQualification.getQualificationById, arrAux);
         
-        (data)
-        ? res.json(newReponse('Qualification created', 'Success', { }))
-        : res.json(newReponse('Error create qualification', 'Error', { }));
+        if(check.rowCount > 0) {
+            res.json(newReponse('Qualification-user already exist', 'Error', { }));
+        
+        } else {
+            const arrAux2 = [ qualificationId, universityId, averageScore, dateInit, dateEnd, tokenDecoded.id ];
+            const data = await pool.query(dbQueriesUserQualification.createUserQualification, arrAux2);
+            
+            (data)
+            ? res.json(newReponse('Qualification created', 'Success', { }))
+            : res.json(newReponse('Error create qualification', 'Error', { }));
+        }
     }
 }
 

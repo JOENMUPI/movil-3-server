@@ -7,11 +7,12 @@ module.exports = {
     VALUES ($1, $2, $3, $4, $5, $6)`,    
     
     // Select
+    getQualificationById: `SELECT * FROM ${ table } WHERE (user_ide = $3 AND qualification_ide = $1 AND university_ide = $2)`,
     getQualificationByUserId: `SELECT uq.*, u.*, q.* FROM ${ table } AS uq 
     JOIN university AS u ON u.university_ide = uq.university_ide 
     JOIN qualification AS q ON q.qualification_ide = uq.qualification_ide
     WHERE uq.user_ide = $1`,
-    
+
     
     // Update
     updatetQualificationById: `UPDATE ${ table } SET qualification_ide = $1, university_ide = $2, user_qualification_not = $3, 

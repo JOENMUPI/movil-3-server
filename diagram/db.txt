@@ -140,6 +140,7 @@ CREATE TABLE public.enterprise (
                 enterprise_nam VARCHAR NOT NULL,
                 enterprise_des VARCHAR NOT NULL,
                 user_ide INTEGER NOT NULL,
+                enterprise_sts BOOLEAN DEFAULT true NOT NULL,
                 CONSTRAINT enterprise_pk PRIMARY KEY (enterprise_ide)
 );
 
@@ -149,6 +150,7 @@ ALTER SEQUENCE public.enterprise_enterprise_ide_seq OWNED BY public.enterprise.e
 CREATE TABLE public.user_enterprise (
                 user_ide INTEGER NOT NULL,
                 enterprise_ide INTEGER NOT NULL,
+                user_enterpise_pet_flg BOOLEAN NOT NULL,
                 CONSTRAINT user_enterprise_pk PRIMARY KEY (user_ide, enterprise_ide)
 );
 
@@ -165,28 +167,28 @@ CREATE TABLE public.job (
 
 ALTER SEQUENCE public.job_job_ide_seq OWNED BY public.job.job_ide;
 
-CREATE SEQUENCE public.job_offer_job_offer_seq;
+CREATE SEQUENCE public.job_offer_job_offer_ide_seq;
 
 CREATE TABLE public.job_offer (
-                job_offer INTEGER NOT NULL DEFAULT nextval('public.job_offer_job_offer_seq'),
+                job_offer_ide INTEGER NOT NULL DEFAULT nextval('public.job_offer_job_offer_ide_seq'),
                 job_ide INTEGER NOT NULL,
                 enterprise_ide INTEGER NOT NULL,
                 job_offer_dat_exp TIMESTAMP NOT NULL,
                 job_offer_des VARCHAR NOT NULL,
                 job_offer_pri REAL,
                 job_offer_tit VARCHAR NOT NULL,
-                CONSTRAINT job_offer_pk PRIMARY KEY (job_offer)
+                CONSTRAINT job_offer_pk PRIMARY KEY (job_offer_ide)
 );
 
 
-ALTER SEQUENCE public.job_offer_job_offer_seq OWNED BY public.job_offer.job_offer;
+ALTER SEQUENCE public.job_offer_job_offer_ide_seq OWNED BY public.job_offer.job_offer_ide;
 
 CREATE TABLE public.cv_job_offer (
-                job_offer INTEGER NOT NULL,
+                job_offer_ide INTEGER NOT NULL,
                 user_ide INTEGER NOT NULL,
                 cv_ide INTEGER NOT NULL,
                 cv_job_offer_sts BOOLEAN NOT NULL,
-                CONSTRAINT cv_job_offer_pk PRIMARY KEY (job_offer, user_ide, cv_ide)
+                CONSTRAINT cv_job_offer_pk PRIMARY KEY (job_offer_ide, user_ide, cv_ide)
 );
 
 
@@ -504,7 +506,7 @@ NOT DEFERRABLE;
 ALTER TABLE public._experience ADD CONSTRAINT enterprise__experience_fk
 FOREIGN KEY (enterprise_ide)
 REFERENCES public.enterprise (enterprise_ide)
-ON DELETE NO ACTION
+ON DELETE CASCADE
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
@@ -530,8 +532,8 @@ ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE public.cv_job_offer ADD CONSTRAINT job_offer_cv_job_offer_fk
-FOREIGN KEY (job_offer)
-REFERENCES public.job_offer (job_offer)
+FOREIGN KEY (job_offer_ide)
+REFERENCES public.job_offer (job_offer_ide)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;

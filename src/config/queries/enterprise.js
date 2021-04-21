@@ -7,7 +7,7 @@ module.exports = {
    
     
     // Select
-    getEnterpriseByUserId: `SELECT * FROM ${ table } WHERE user_ide = $1`,
+    getEnterpriseByUserId: `SELECT * FROM ${ table } WHERE (user_ide = $1 AND enterprise_sts = true)`,
     getEnterpriseById: `SELECT e.* FROM ${ table } AS e 
     WHERE e.enterprise_ide = $1`,
     
@@ -16,6 +16,7 @@ module.exports = {
     updateEnterpriseById: `UPDATE ${ table } SET enterprise_nam = $1, enterprise_des = $2, enterprise_img = $3  
     WHERE (enterprise_ide = $4 AND user_ide = $5)`,
 
+
     // Delete
-    deleteEnterpriseById: `DELETE FROM ${ table } WHERE enterprise_ide = $1 AND user_ide = $2`
+    deleteEnterpriseById: `UPDATE ${ table } SET enterprise_sts = false WHERE (enterprise_ide = $1 AND user_ide = $2)`
 };

@@ -136,7 +136,7 @@ const dataToPost = (post, reactions, commentaries) => {
     return jsonAux
 }
 
-const sms = async (phoneNumber, code) => {  
+const sms = async (phoneNumber, code) => { 
     const jsonAux = {
         body: `Your FakedIn's code verification is ${code}`,
         from: twilioConfig.phone,
