@@ -8,8 +8,7 @@ module.exports = {
     
     // Select
     getEnterpriseByUserId: `SELECT * FROM ${ table } WHERE (user_ide = $1 AND enterprise_sts = true)`,
-    getEnterpriseById: `SELECT e.* FROM ${ table } AS e 
-    WHERE e.enterprise_ide = $1`,
+    getEnterpriseById: `SELECT * FROM ${ table } WHERE enterprise_ide = $1`,
     
     
     // Update
