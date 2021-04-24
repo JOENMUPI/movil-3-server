@@ -8,6 +8,7 @@ module.exports = {
 
     // Select 
     getAllUsers: `SELECT * FROM ${ table }`, 
+    getUserByName: `SELECT * FROM ${ table } WHERE UPPER(user_nam) LIKE $1`,
     getUserById: `SELECT u.*, c.country_nam FROM ${ table } AS u
     JOIN country AS c ON c.country_ide = u.country_ide WHERE user_ide = $1`,
     getUserByNumber: `SELECT * FROM ${ table } where pgp_sym_decrypt(user_num, 'AES_KEY')::varchar = $1`,

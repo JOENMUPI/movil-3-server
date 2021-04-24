@@ -11,6 +11,7 @@ const dbQueriesReaction = require('../config/queries/reaction');
 const dbQueriesPostReaction = require('../config/queries/post_reaction');
 const dbQueriesComment = require('../config/queries/comment');
 const dbQueriesConnect = require('../config/queries/connect');
+const dbQueriesExperience = require('../config/queries/experience');
 const passwordUtil = require('../utilities/password');
 const field = require('../utilities/field');
 const jwt = require('jsonwebtoken');
@@ -94,6 +95,35 @@ const dataToQualifications = (rows) => {
     });
 
     return qualifications;
+}
+
+const dataToExperience = (rows) => {
+    const experiences = [];
+    
+    rows.forEach(element => {
+        let aux = {  
+            id: element.experience_ide,
+            job: element.experience_job,
+            typeJob: element.experience_typ_job,
+            dateEnd: element.experience_dat_end,
+            dateInit: element.experience_dat_sta,
+            enterpriseId: element.enterprise_ide, 
+            enterprise: {
+                id: element.enterprise_ide,
+                img: element.enterprise_img,
+                name: element.enterprise_nam,
+                description: element.enterprise_des
+            }    
+        }
+
+        if(aux.enterprise.img != null) {
+            aux.enterprise.img = aux.enterprise.img.toString();
+        }
+
+        experiences.push(aux); 
+    }); 
+
+    return experiences;
 }
 
 const dataToLanguage = (rows) => {
@@ -197,6 +227,28 @@ const checkNum = (req, res) => {
     });
 }
 
+const getUsersByName = async (req, res) => {
+    const token = req.headers['x-access-token'];
+    const { name } = req.params;
+
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+
+    } else {
+        const arrAux = [ `%${name.toUpperCase()}%` ];
+        const data = await pool.query(dbQueriesUser.getUserByName, arrAux);
+        
+        if(data) { 
+            (data.rowCount > 0)
+            ? res.json(newReponse('Users found', 'Success', dataToUser(data.rows)))
+            : res.json(newReponse('Users not found', 'Success', []));
+        
+        } else {
+            res.json(newReponse('Error searhing companies', 'Error', { }));
+        }
+    }
+}
+
 const checkCode = (req, res) => { 
     const token = req.headers['x-access-token'];
     const { code, phoneNumber } = req.body;
@@ -291,7 +343,7 @@ const getUserByNumber = async (req, res) => {
     }
 }
 
-const getUserById = async (req, res) => {  /////// falta getear las experiencias
+const getUserById = async (req, res) => {  
     const token = req.headers['x-access-token'];
     const { userId } = req.params; 
 
@@ -312,6 +364,7 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
             let dataIdioms = await pool.query(dbQueriesIdiom.getIdiomsByUserId, [ dataUser.id ]);
             let dataMyConnect = await pool.query(dbQueriesConnect.checkMyconnect, [ dataUser.id, tokenDecoded.id ]);
             let dataConnectNum = await pool.query(dbQueriesConnect.getNumConnectsByUserId, [ dataUser.id ]);
+            let dataExperience = await pool.query(dbQueriesExperience.getExperienceByUserId, [ dataUser.id ]);
             
             
             let postsAux = [];
@@ -329,6 +382,10 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
             (dataQualification)
             ? dataQualification = dataToQualifications(dataQualification.rows) 
             : dataQualification = [];
+
+            (dataExperience)
+            ? dataExperience = dataToExperience(dataExperience.rows) 
+            : dataExperience = [];
 
             (dataIdioms) 
             ? dataIdioms = dataToLanguage(dataIdioms.rows)
@@ -376,7 +433,7 @@ const getUserById = async (req, res) => {  /////// falta getear las experiencias
                 activities: postsAux,
                 qualifications: dataQualification,  
                 idioms: dataIdioms,
-                experiences: []
+                experiences: dataExperience
             } 
 
             res.json(newReponse('User found', 'Success', user)); 
@@ -562,6 +619,7 @@ module.exports = {
     checkCode,
     login,
     getUser, 
+    getUsersByName,
     getUserByNumber,
     createUsers, 
     getUserById,

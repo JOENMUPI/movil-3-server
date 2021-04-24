@@ -38,7 +38,7 @@ app.use(require('./routes/qualification'));
 app.use(require('./routes/enterprise'));
 app.use(require('./routes/job'));
 app.use(require('./routes/offer'));
-app.use(require('./routes/Experience'));
+app.use(require('./routes/experience'));
 //app.use(require('./routes/init'));
 
 

@@ -44,7 +44,7 @@ const getOffers = async (req, res) => {
     
     if(data) { 
         (data.rowCount > 0)
-        ? res.json(newReponse('All offers', 'Success', dataToCountries(data.rows)))
+        ? res.json(newReponse('All offers', 'Success', dataToOffers(data.rows)))
         : res.json(newReponse('Offers not found', 'Success', []));
     
     } else {

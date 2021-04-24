@@ -10,15 +10,15 @@ const endPoint = '/experience';
 
 
 // Post
-router.post(`${endPoint}/user`, experience.createExperience);
+router.post(endPoint, experience.createExperience);
 
 
 // Put
-router.put(`${endPoint}/user`, experience.updateExperienceById);
+router.put(endPoint, experience.updateExperienceById);
 
 
 // Delete
-router.delete(`${endPoint}/user/:experienceId`, experience.deleteExperienceById);
+router.delete(`${endPoint}/:experienceId`, experience.deleteExperienceById);
 
 
 // Export

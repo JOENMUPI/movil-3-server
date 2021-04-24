@@ -1,4 +1,4 @@
-const table = 'experience';
+const table = '_experience';
 
 module.exports = {
     // Insert
