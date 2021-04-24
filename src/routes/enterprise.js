@@ -9,6 +9,7 @@ const endPoint = '/enterprise';
 // Get
 router.get(endPoint, enterprise.getEnterprise);
 router.get(`${ endPoint }/:enterpriseId`, enterprise.getEnterpriseById);
+router.get(`${ endPoint }/search/:name`, enterprise.getCompaniesByName);
 
 
 // Post

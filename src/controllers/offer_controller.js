@@ -1,7 +1,6 @@
 const Pool = require('pg').Pool;
 const dbConfig = require('../config/db_config');
 const dbQueriesOffer = require('../config/queries/offer');
-const jwt = require('jsonwebtoken');
 
 
 // Variables
@@ -40,13 +39,13 @@ const dataToOffers = (rows) => {
 
 
 // Logic
-const getReactions = async (req, res) => {
-    const data = await pool.query(dbQueriesReaction.getAllReactions);
+const getOffers = async (req, res) => {
+    const data = await pool.query(dbQueriesOffer.getOffers, [ new Date() ]);
     
     if(data) { 
         (data.rowCount > 0)
-        ? res.json(newReponse('All Reactions', 'Success', dataToCountries(data.rows)))
-        : res.json(newReponse('Countries not found', 'Success', []));
+        ? res.json(newReponse('All offers', 'Success', dataToCountries(data.rows)))
+        : res.json(newReponse('Offers not found', 'Success', []));
     
     } else {
         res.json(newReponse('Error searhing countries', 'Error', { }));
@@ -61,70 +60,52 @@ const createOffer = async (req, res) => {
         res.json(newReponse('User dont have a token', 'Error', { }));
 
     } else {
-        const arrAux = [ tittle, description, dateExp, price, jobId, enterpriseId ];
+        const arrAux = [ tittle, description, dateExp, price, jobId, enterpriseId ]; 
         const data = await pool.query(dbQueriesOffer.createOffer, arrAux);
         
         (data)
-        ? res.json(newReponse('Offer created', 'Success', { }))
+        ? res.json(newReponse('Offer created', 'Success', dataToOffers(data.rows)[0]))
         : res.json(newReponse('Error create offer', 'Error', { }));
     }
 }
 
-const createCommentReaction = async (req, res) => {
+const updateOfferById = async (req, res) => {
     const token = req.headers['x-access-token'];
-    const { commentId, reactionId } = req.body; 
+    const { tittle, description, price, dateExp, jobId, id } = req.body;
     
     if(!token) {
         res.json(newReponse('User dont have a token', 'Error', { }));
 
-    } else { 
-        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
-        const arrAux = [ commentId, reactionId, tokenDecoded.id ]; 
-        const data = await pool.query(dbQueriesCommentReaction.createCommentaryReaction, arrAux);
+    } else {
+        const arrAux = [ tittle, description, dateExp, price, jobId, id ];
+        const data = await pool.query(dbQueriesOffer.updateOfferById, arrAux);
         
         (data)
-        ? res.json(newReponse('Comment-reaction created', 'Success', { }))
-        : res.json(newReponse('Error create post', 'Error', { }));
+        ? res.json(newReponse('Offer updated', 'Success', { }))
+        : res.json(newReponse('Error update offer', 'Error', { }));
     }
 }
  
-const deletePostReactionById = async (req, res) => {
+const deleteOfferById = async (req, res) => {
     const token = req.headers['x-access-token'];
-    const { postId, reactionId } = req.params;
+    const { offerId } = req.params;
 
     if(!token) {
         res.json(newReponse('User dont have a token', 'Error', { }));
     
     } else {
-        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
-        const arrAux = [ postId, reactionId, tokenDecoded.id ];
-        const data = await pool.query(dbQueriesPostReaction.deletePostReactionById, arrAux);
+        const data = await pool.query(dbQueriesOffer.deleteOfferById, [ offerId ]);
 
         (data)
-        ? res.json(newReponse('Detele post-reaction successfully', 'Success', { }))
-        : res.json(newReponse('Error on delete with id', 'Error', { }));
-    }
-}
-
-const deleteCommentReactionById = async (req, res) => {
-    const token = req.headers['x-access-token'];
-    const { commentId, reactionId } = req.params;
-
-    if(!token) {
-        res.json(newReponse('User dont have a token', 'Error', { }));
-    
-    } else {
-        const { iat, exp, ...tokenDecoded } = jwt.verify(token, process.env.SECRET); 
-        const arrAux = [ commentId, reactionId, tokenDecoded.id ];
-        const data = await pool.query(dbQueriesCommentReaction.deleteCommentaryReactionById, arrAux);
-
-        (data)
-        ? res.json(newReponse('Detele comment-reaction successfully', 'Success', { }))
+        ? res.json(newReponse('Detele offer successfully', 'Success', { }))
         : res.json(newReponse('Error on delete with id', 'Error', { }));
     }
 }
 
 // Export
 module.exports = { 
-    
+    getOffers,
+    createOffer,
+    updateOfferById,
+    deleteOfferById
 }

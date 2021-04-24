@@ -3,6 +3,7 @@ const dbConfig = require('../config/db_config');
 const dbQueriesEnterprise = require('../config/queries/enterprise');
 const dbQueriesCountryEnterprise = require('../config/queries/enterprise_country');
 const dbQueriesJob = require('../config/queries/job');
+const dbQueriesOffer = require('../config/queries/offer');
 const jwt = require('jsonwebtoken');
 
 
@@ -64,6 +65,26 @@ const dataToJobs = (rows) => {
     return jobs;
 }
 
+const dataToOffers = (rows) => {
+    const offers = [];
+        
+    rows.forEach(element => {
+        offers.push({  
+            id: element.job_offer_ide,
+            tittle: element.job_offer_tit,
+            description: element.job_offer_des,
+            dateExp: element.job_offer_dat_exp,
+            price: element.job_offer_pri,
+            jobId: element.job_ide,
+            job: {
+                description: element.job_des
+            }
+        });
+    });
+
+    return offers;
+}
+
 
 // Logic
 const getEnterprise = async (req, res) => {
@@ -80,6 +101,28 @@ const getEnterprise = async (req, res) => {
             (data.rowCount > 0)
             ? res.json(newReponse('Companies found', 'Success', dataToCompanies(data.rows)))
             : res.json(newReponse('Comapnies not found', 'Success', []));
+        
+        } else {
+            res.json(newReponse('Error searhing companies', 'Error', { }));
+        }
+    }
+}
+
+const getCompaniesByName = async (req, res) => {
+    const token = req.headers['x-access-token'];
+    const { name } = req.params;
+
+    if(!token) {
+        res.json(newReponse('User dont have a token', 'Error', { }));
+
+    } else {
+        const arrAux = [ `%${name.toUpperCase()}%` ];
+        const data = await pool.query(dbQueriesEnterprise.getEnterpriseByName, arrAux);
+        
+        if(data) { 
+            (data.rowCount > 0)
+            ? res.json(newReponse('Companies found', 'Success', dataToCompanies(data.rows)))
+            : res.json(newReponse('Companies not found', 'Success', []));
         
         } else {
             res.json(newReponse('Error searhing companies', 'Error', { }));
@@ -104,7 +147,12 @@ const getEnterpriseById = async (req, res) => {
         if(data) {
             let countriesData = await pool.query(dbQueriesCountryEnterprise.getCountriesByEnterprise, [ enterpriseId ]);
             let jobsData = await pool.query(dbQueriesJob.getJobsByEnterpriseId, [ enterpriseId ]);
+            let offersData = await pool.query(dbQueriesOffer.getOffersByEnterpriseId, [ enterpriseId ]);
             
+            (offersData)
+            ? offersData = dataToOffers(offersData.rows)
+            : offersData = [];
+
             (jobsData)
             ? jobsData = dataToJobs(jobsData.rows)
             : jobsData = [];
@@ -112,13 +160,13 @@ const getEnterpriseById = async (req, res) => {
             (countriesData)
             ? countriesData = dataToCountries(countriesData.rows)
             : countriesData = [];
-            
     
             const response = {
                 ...data,
                 countries: countriesData,
-                jobs: jobsData
-            }
+                jobs: jobsData,
+                offers: offersData
+            } 
 
             res.json(newReponse('Company found', 'Success', response));
         
@@ -184,6 +232,7 @@ const deleteEnterpriseById = async (req, res) => {
 // Export
 module.exports = { 
     createEnterprise,
+    getCompaniesByName,
     getEnterprise,
     getEnterpriseById,
     updateEnterpriseById,

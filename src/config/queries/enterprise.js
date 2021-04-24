@@ -7,6 +7,7 @@ module.exports = {
    
     
     // Select
+    getEnterpriseByName: `SELECT * FROM ${ table } WHERE UPPER(enterprise_nam) LIKE $1`,
     getEnterpriseByUserId: `SELECT * FROM ${ table } WHERE (user_ide = $1 AND enterprise_sts = true)`,
     getEnterpriseById: `SELECT * FROM ${ table } WHERE enterprise_ide = $1`,
     
